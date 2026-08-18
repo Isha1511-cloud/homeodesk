@@ -10,7 +10,17 @@ if (!apiKey) {
 }
 
 const ai = new GoogleGenAI({
-  apiKey
+  apiKey,
+  httpOptions: {
+    timeout: 120000,
+    retryOptions: {
+      attempts: 3,
+      initialDelay: 1000,
+      maxDelay: 10000,
+      expBase: 2,
+      jitter: 0.2
+    }
+  }
 });
 
 const SYSTEM_PROMPT = `
@@ -89,10 +99,14 @@ Answer the user's question directly.
 
     console.log('🤖 Sending request to Gemini...');
 
-    const result = await ai.models.generateContent({
-      model: 'gemini-3.6-flash',
-      contents: prompt
-    });
+   const result = await ai.models.generateContent({
+  model: 'gemini-3.6-flash',
+  contents: prompt,
+  config: {
+    temperature: 0.4,
+    maxOutputTokens: 500
+  }
+});
 
     const answer = result?.text;
 
