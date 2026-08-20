@@ -12,6 +12,7 @@ const consultationSchema = new mongoose.Schema(
     timeSlot: { type: String, required: true },
     concern: { type: String, required: true, trim: true },
     status: { type: String, enum: ['pending', 'confirmed', 'completed', 'cancelled'], default: 'pending', index: true },
+    notes: { type: String, default: '' },
     meetingLink: { type: String, default: '' },
     legacyId: { type: String, default: null, index: true },
   },

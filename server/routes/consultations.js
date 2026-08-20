@@ -58,9 +58,10 @@ router.patch('/:id', requireAuth, requireRole('doctor'), async (req, res) => {
     const existing = await Consultation.findById(req.params.id);
     if (!existing) return res.status(404).json({ ok: false, error: 'Consultation not found.' });
     if (!existing.doctorId.equals(req.user._id)) return res.status(403).json({ ok: false, error: 'You can only update your own consultations.' });
-    const { status, meetingLink, date, timeSlot } = req.body || {};
+    const { status, meetingLink, date, timeSlot, notes } = req.body || {};
     if (status !== undefined) { const allowed = ['pending', 'confirmed', 'completed', 'cancelled']; if (!allowed.includes(status)) return res.status(400).json({ ok: false, errors: { status: `Status must be one of: ${allowed.join(', ')}` } }); existing.status = status; }
     if (meetingLink !== undefined) existing.meetingLink = String(meetingLink);
+    if (notes !== undefined) existing.notes = String(notes);
     if (date !== undefined) { if (!isValidDate(date)) return res.status(400).json({ ok: false, errors: { date: 'Invalid date.' } }); existing.date = date; }
     if (timeSlot !== undefined) { if (!isValidTimeSlot(timeSlot)) return res.status(400).json({ ok: false, errors: { timeSlot: 'Invalid time slot.' } }); existing.timeSlot = timeSlot; }
     await existing.save();

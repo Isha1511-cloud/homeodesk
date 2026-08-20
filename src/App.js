@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext, useEffect } from 'react';
+import React, { useState, createContext, useContext, useEffect, useMemo } from 'react';
 import {
   createAppointment, createConsultation,
   getAppointments, updateAppointment, cancelAppointment,
@@ -1429,6 +1429,216 @@ function PatientFeedback() {
 /* ─────────────────────────────────────────────
    DOCTOR PORTAL
 ───────────────────────────────────────────── */
+/* ─────────────────────────────────────────────
+   CLINICAL CONSULTATION NOTES WORKSPACE MODAL
+───────────────────────────────────────────── */
+const CLINICAL_NOTE_SECTIONS = [
+  { key: 'chiefComplaint', title: '🩺 Chief Complaint', placeholder: 'Primary reason for consultation, onset, duration, severity, aggravating/ameliorating factors...' },
+  { key: 'symptoms', title: '🔬 Symptoms & Observations', placeholder: 'Physical & mental symptoms, modalities, vitality, constitutional characteristics...' },
+  { key: 'medicalHistory', title: '📋 Medical History', placeholder: 'Past medical/surgical history, family history, known allergies, miasmatic history...' },
+  { key: 'currentMedication', title: '💊 Current Medication', placeholder: 'Existing allopathic/homeopathic medicines, current dosages, ongoing supplements...' },
+  { key: 'doctorAssessment', title: '🧠 Doctor\'s Assessment', placeholder: 'Homeopathic totality of symptoms, miasmatic diagnosis, constitutional evaluation...' },
+  { key: 'treatmentNotes', title: '🌿 Treatment / Prescription Notes', placeholder: 'Selected remedy, potency (30C, 200C, 1M), repetition schedule, dietary/auxiliary remedies...' },
+  { key: 'followUpInstructions', title: '📅 Follow-up Instructions', placeholder: 'Patient guidance, expected medicinal reaction/aggravation, next follow-up date...' },
+];
+
+const DEFAULT_CLINICAL_FORM = {
+  chiefComplaint: '', symptoms: '', medicalHistory: '',
+  currentMedication: '', doctorAssessment: '', treatmentNotes: '', followUpInstructions: ''
+};
+
+function parseRawNotes(rawNotes) {
+  if (!rawNotes || !String(rawNotes).trim()) return { ...DEFAULT_CLINICAL_FORM };
+  try {
+    const parsed = JSON.parse(rawNotes);
+    if (typeof parsed === 'object' && parsed !== null) {
+      return { ...DEFAULT_CLINICAL_FORM, ...parsed };
+    }
+  } catch {
+    return { ...DEFAULT_CLINICAL_FORM, chiefComplaint: String(rawNotes) };
+  }
+  return { ...DEFAULT_CLINICAL_FORM };
+}
+
+function formatNotesSummary(rawNotes) {
+  if (!rawNotes) return '';
+  const parsed = parseRawNotes(rawNotes);
+  const parts = [];
+  if (parsed.chiefComplaint) parts.push(`Complaint: ${parsed.chiefComplaint}`);
+  if (parsed.doctorAssessment) parts.push(`Assessment: ${parsed.doctorAssessment}`);
+  if (parsed.treatmentNotes) parts.push(`Treatment: ${parsed.treatmentNotes}`);
+  if (parts.length === 0) {
+    return String(rawNotes).slice(0, 120);
+  }
+  return parts.join(' · ').slice(0, 140);
+}
+
+function ClinicalNotesModal({ booking, onClose, onSaved }) {
+  const initialForm = useMemo(() => {
+    if (!booking?.id) return DEFAULT_CLINICAL_FORM;
+    const draft = localStorage.getItem(`hd_draft_notes_${booking.id}`);
+    if (draft) {
+      try { return { ...DEFAULT_CLINICAL_FORM, ...JSON.parse(draft) }; } catch {}
+    }
+    return parseRawNotes(booking.notes);
+  }, [booking]);
+
+  const [form, setForm] = useState(initialForm);
+  const [hasUnsaved, setHasUnsaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [alert, setAlert] = useState({ text: '', type: 'success' });
+
+  const isExistingNotes = Boolean(booking?.notes && String(booking.notes).trim());
+
+  const handleChange = (key, val) => {
+    const updated = { ...form, [key]: val };
+    setForm(updated);
+    setHasUnsaved(true);
+    if (booking?.id) {
+      localStorage.setItem(`hd_draft_notes_${booking.id}`, JSON.stringify(updated));
+    }
+  };
+
+  const handleSave = async (e) => {
+    if (e) e.preventDefault();
+    setSaving(true);
+    setAlert({ text: '', type: 'success' });
+    try {
+      const serialized = JSON.stringify(form);
+      if (booking.kind === 'consultation') {
+        await updateConsultation(booking.id, { notes: serialized });
+      } else {
+        await updateAppointment(booking.id, { notes: serialized });
+      }
+      if (booking?.id) {
+        localStorage.removeItem(`hd_draft_notes_${booking.id}`);
+      }
+      setAlert({ text: 'Consultation notes saved successfully.', type: 'success' });
+      setHasUnsaved(false);
+      if (onSaved) onSaved();
+    } catch (err) {
+      setAlert({ text: err.message || 'Failed to save notes.', type: 'error' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    if (hasUnsaved) {
+      const confirmClose = window.confirm('You have unsaved changes in your consultation notes. Are you sure you want to close?');
+      if (!confirmClose) return;
+    }
+    onClose();
+  };
+
+  return (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      background: 'rgba(13, 43, 30, 0.75)', backdropFilter: 'blur(6px)',
+      zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: '20px 16px', boxSizing: 'border-box'
+    }}>
+      <div style={{
+        width: 'min(920px, 94vw)', height: 'min(860px, 86vh)',
+        background: '#F8F5F0', borderRadius: 24,
+        border: '1px solid rgba(201, 168, 76, 0.4)',
+        boxShadow: '0 24px 48px rgba(0,0,0,0.4)',
+        display: 'flex', flexDirection: 'column', overflow: 'hidden'
+      }}>
+        {/* Header */}
+        <div style={{
+          background: `linear-gradient(135deg, ${C.greenDark}, ${C.green})`,
+          padding: '20px 24px', color: '#fff', display: 'flex',
+          justifyContent: 'space-between', alignItems: 'flex-start',
+          borderBottom: '1px solid rgba(201, 168, 76, 0.25)'
+        }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+              <span style={{ fontSize: 22 }}>📋</span>
+              <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 22, fontWeight: 700, margin: 0, color: '#fff' }}>
+                Consultation Notes
+              </h2>
+            </div>
+            <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', fontSize: 12.5, color: 'rgba(255,255,255,0.85)', marginTop: 8 }}>
+              <div><strong>Patient Name:</strong> <span style={{ color: C.gold, fontWeight: 600 }}>{booking.patientName}</span></div>
+              <div><strong>Date:</strong> {booking.date} · {booking.timeSlot}</div>
+              <div><strong>Type:</strong> {booking.type === 'online' ? '💻 Online Consultation' : '🏥 In-Clinic Appointment'}</div>
+            </div>
+          </div>
+          <button
+            onClick={handleCancel}
+            style={{ background: 'rgba(255,255,255,0.12)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '50%', width: 34, height: 34, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            title="Close notes workspace"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Alert Banner */}
+        {alert.text && (
+          <div style={{ padding: '10px 24px', background: alert.type === 'error' ? '#fef2f2' : '#f0fdf4', color: alert.type === 'error' ? '#dc2626' : '#166534', borderBottom: '1px solid rgba(0,0,0,0.05)', fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>{alert.type === 'error' ? '⚠️' : '✅'} {alert.text}</span>
+            <button onClick={() => setAlert({ text: '', type: 'success' })} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}>✕</button>
+          </div>
+        )}
+
+        {/* Scrollable Sheet Body */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '24px 28px', background: '#F8F5F0' }}>
+          <div style={{ background: '#ffffff', borderRadius: 16, padding: '24px', border: '1px solid rgba(27,67,50,0.1)', boxShadow: '0 4px 16px rgba(0,0,0,0.03)' }}>
+            {/* Patient Concern Header */}
+            {booking.concern && (
+              <div style={{ background: 'rgba(82,183,136,0.08)', border: '1px solid rgba(82,183,136,0.22)', borderRadius: 12, padding: '12px 16px', marginBottom: 24 }}>
+                <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1, color: C.green, fontWeight: 700, marginBottom: 2 }}>Initial Patient Concern</div>
+                <div style={{ fontSize: 13.5, color: '#374151', fontStyle: 'italic' }}>"{booking.concern}"</div>
+              </div>
+            )}
+
+            {/* 7 Clinical Sections */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
+              {CLINICAL_NOTE_SECTIONS.map(({ key, title, placeholder }) => (
+                <div key={key}>
+                  <label style={{ display: 'block', fontWeight: 600, color: C.green, fontSize: 14.5, marginBottom: 6, fontFamily: 'Playfair Display, serif' }}>
+                    {title}
+                  </label>
+                  <textarea
+                    rows={3}
+                    style={{
+                      width: '100%', background: '#FAF8F5',
+                      border: '1px solid rgba(27,67,50,0.18)', borderRadius: 10,
+                      padding: '12px 14px', color: '#1a1a1a', fontSize: 13.5,
+                      lineHeight: 1.6, fontFamily: 'Inter, sans-serif', outline: 'none',
+                      boxSizing: 'border-box', transition: 'border-color 200ms ease, box-shadow 200ms ease',
+                      resize: 'vertical', minHeight: 84
+                    }}
+                    placeholder={placeholder}
+                    value={form[key] || ''}
+                    onChange={(e) => handleChange(key, e.target.value)}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Actions */}
+        <div style={{ padding: '16px 24px', background: '#fff', borderTop: '1px solid rgba(27,67,50,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+          <div style={{ fontSize: 12, color: '#6b7280' }}>
+            {hasUnsaved ? <span style={{ color: C.gold, fontWeight: 600 }}>● Unsaved changes (draft auto-saved locally)</span> : <span style={{ color: C.sage, fontWeight: 600 }}>✓ All changes saved</span>}
+          </div>
+          <div style={{ display: 'flex', gap: 12 }}>
+            <button onClick={handleCancel} style={{ ...S.btnOutline, padding: '10px 20px', fontSize: 13 }}>
+              Cancel
+            </button>
+            <button onClick={handleSave} disabled={saving} style={{ ...S.btnGold, padding: '10px 24px', fontSize: 13, opacity: saving ? 0.7 : 1 }}>
+              {saving ? 'Saving Notes…' : isExistingNotes ? 'Update Notes' : 'Save Notes'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function DoctorPortal() {
   const { user, logout } = useAuth();
 
@@ -1498,16 +1708,10 @@ function DoctorPortal() {
     }
   };
 
-  const addNotes = async (booking) => {
-    if (booking.kind !== 'appointment') return; // consultations have no notes field
-    const notes = window.prompt("Doctor's notes:", booking.notes || '');
-    if (notes === null) return;
-    try {
-      await updateAppointment(booking.id, { notes });
-      loadBookings();
-    } catch (err) {
-      setBookingsError(err.message);
-    }
+  const [activeNotesBooking, setActiveNotesBooking] = useState(null);
+
+  const addNotes = (booking) => {
+    setActiveNotesBooking(booking);
   };
 
   const todayStr = new Date().toISOString().slice(0, 10);
@@ -1650,7 +1854,7 @@ function DoctorPortal() {
                     </div>
                     <div style={{ color: '#374151', fontSize: 13, marginBottom: 3 }}>📅 {new Date(a.date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })} · {a.timeSlot}</div>
                     <div style={{ color: '#6b7280', fontSize: 13 }}>Concern: {a.concern}</div>
-                    {a.notes && <div style={{ color: C.green, fontSize: 13, marginTop: 6, background: 'rgba(27,67,50,0.06)', borderRadius: 8, padding: '6px 10px' }}>📝 {a.notes}</div>}
+                    {a.notes && <div style={{ color: C.green, fontSize: 13, marginTop: 6, background: 'rgba(27,67,50,0.06)', borderRadius: 8, padding: '6px 10px' }}>📝 <strong>Notes:</strong> {formatNotesSummary(a.notes)}</div>}
                     {a.meetingLink && <div style={{ color: '#6b7280', fontSize: 12, marginTop: 4 }}>🔗 <a href={a.meetingLink} target="_blank" rel="noreferrer" style={{ color: C.greenMid }}>{a.meetingLink}</a></div>}
                   </div>
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -1658,7 +1862,7 @@ function DoctorPortal() {
                     {a.status === 'confirmed' && <button onClick={() => updateBookingStatus(a, 'completed')} style={{ ...S.btnGreen, fontSize: 12, padding: '8px 14px' }}>✔ Mark Completed</button>}
                     {(a.status === 'pending' || a.status === 'confirmed') && <button onClick={() => updateBookingStatus(a, 'cancelled')} style={{ ...S.btnDanger, fontSize: 12, padding: '8px 14px' }}>✕ Cancel</button>}
                     {a.type === 'online' && <button onClick={() => addMeetingLink(a)} style={{ ...S.btnGold, fontSize: 12, padding: '8px 14px' }}>🔗 {a.meetingLink ? 'Edit Link' : 'Add Link'}</button>}
-                    {a.kind === 'appointment' && <button onClick={() => addNotes(a)} style={{ ...S.btnOutline, fontSize: 12, padding: '8px 14px' }}>📝 Notes</button>}
+                    <button onClick={() => addNotes(a)} style={{ ...S.btnOutline, fontSize: 12, padding: '8px 14px' }}>📝 {a.notes ? 'Edit Notes' : 'Notes'}</button>
                   </div>
                 </div>
               </div>
@@ -1674,6 +1878,17 @@ function DoctorPortal() {
 
         {/* FEEDBACK */}
         {tab === 'feedback' && <DoctorFeedbackPanel />}
+
+        {/* Clinical Consultation Notes Workspace Modal */}
+        {activeNotesBooking && (
+          <ClinicalNotesModal
+            booking={activeNotesBooking}
+            onClose={() => setActiveNotesBooking(null)}
+            onSaved={() => {
+              loadBookings();
+            }}
+          />
+        )}
       </main>
     </div>
   );
