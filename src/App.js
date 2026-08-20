@@ -267,7 +267,7 @@ function PublicSite({ onNavigate }) {
       <div style={{ position: 'absolute', top: 18, left: 0, right: 0, zIndex: 60, pointerEvents: 'none' }}>
         <div style={{ ...S.container, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, pointerEvents: 'auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ height: 46, minWidth: 46, borderRadius: 14, background: 'rgba(255,255,255,0.95)', boxShadow: '0 4px 14px rgba(0,0,0,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0, padding: '0 10px' }}><img src="/logo-full.png" alt="Dr. Isha's Homeopathic Clinic" style={{ height: '78%', width: 'auto', maxWidth: '100%', objectFit: 'contain' }} /></div>
+            <div style={{ height: 44, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', flexShrink: 0 }}><img src="/logo-full.png" alt="Dr. Isha's Homeopathic Clinic" style={{ height: '100%', width: 'auto', maxWidth: 160, objectFit: 'contain' }} /></div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
             {navTabs.map(([id, label]) => (
