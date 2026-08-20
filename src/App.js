@@ -245,16 +245,16 @@ function PublicSite({ onNavigate }) {
             </div>
           </div>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <div style={{ position: 'relative' }}>
-              <div style={{ width: 280, height: 340, borderRadius: 28, background: `linear-gradient(135deg,${C.greenMid},${C.green})`, border: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', padding: '0 0 28px', boxShadow: '0 32px 64px rgba(0,0,0,0.3)', overflow: 'hidden' }}>
-                <img src="/doctor.jpg" alt="Dr. Isha Khimani" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '78%', objectFit: 'cover', objectPosition: 'top center' }} />
-                <div style={{ background: 'rgba(13,43,30,0.9)', borderRadius: 14, padding: '12px 20px', textAlign: 'center', width: 'calc(100% - 32px)', position: 'relative', zIndex: 1 }}>
-                  <div style={{ fontFamily: 'Playfair Display,serif', color: '#fff', fontSize: 17, fontWeight: 600 }}>Dr. Isha Khimani</div>
-                  <div style={{ color: C.sage, fontSize: 12, marginTop: 2 }}>BHMS, MD (Homeopathy)</div>
-                  <StarRating value={5} />
-                </div>
+            <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ width: 260, height: 260, borderRadius: '50%', border: '4px solid #C9A84C', boxShadow: '0 16px 36px rgba(0,0,0,0.35)', overflow: 'hidden', flexShrink: 0, background: '#0d2b1e', marginBottom: -28, zIndex: 0 }}>
+                <img src="/doctor.jpg" alt="Dr. Isha Khimani" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%' }} />
               </div>
-              <div style={{ position: 'absolute', bottom: -14, left: -14, background: C.gold, color: C.green, borderRadius: 16, padding: '10px 16px', boxShadow: '0 8px 24px rgba(201,168,76,0.4)' }}>
+              <div style={{ background: 'rgba(13,43,30,0.95)', borderRadius: 16, padding: '14px 22px', textAlign: 'center', width: 250, border: '1px solid rgba(201,168,76,0.35)', boxShadow: '0 10px 28px rgba(0,0,0,0.3)', position: 'relative', zIndex: 1 }}>
+                <div style={{ fontFamily: 'Playfair Display,serif', color: '#fff', fontSize: 17, fontWeight: 600 }}>Dr. Isha Khimani</div>
+                <div style={{ color: C.sage, fontSize: 12, marginTop: 2 }}>BHMS, MD (Homeopathy)</div>
+                <StarRating value={5} />
+              </div>
+              <div style={{ position: 'absolute', top: 10, left: -16, background: C.gold, color: C.green, borderRadius: 16, padding: '10px 16px', boxShadow: '0 8px 24px rgba(201,168,76,0.4)', zIndex: 2 }}>
                 <div style={{ fontFamily: 'Playfair Display,serif', fontWeight: 700, fontSize: 20, lineHeight: 1 }}>18+</div>
                 <div style={{ fontSize: 11, fontWeight: 700 }}>Years Practice</div>
               </div>
