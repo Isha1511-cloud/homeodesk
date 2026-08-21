@@ -444,18 +444,18 @@ function getLocalReply(rawText) {
 const styles = {
   fab: {
     position: 'fixed',
-    bottom: 24,
-    right: 24,
+    bottom: 20,
+    right: 20,
     zIndex: 1000,
-    width: 58,
-    height: 58,
+    width: 56,
+    height: 56,
     borderRadius: '50%',
     background: `linear-gradient(135deg,${C.gold},#d4b96a)`,
     color: C.green,
     border: 'none',
     cursor: 'pointer',
     boxShadow: '0 8px 24px rgba(0,0,0,0.25)',
-    fontSize: 26,
+    fontSize: 24,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -463,13 +463,13 @@ const styles = {
 
   panel: {
     position: 'fixed',
-    bottom: 96,
-    right: 24,
+    bottom: 84,
+    right: 16,
     zIndex: 1000,
     width: 360,
-    maxWidth: '92vw',
-    height: 540,
-    maxHeight: '75vh',
+    maxWidth: 'calc(100vw - 32px)',
+    height: 520,
+    maxHeight: 'calc(100vh - 100px)',
     background: '#fff',
     borderRadius: 20,
     boxShadow: '0 16px 48px rgba(0,0,0,0.28)',
@@ -538,6 +538,8 @@ const styles = {
     maxWidth: '85%',
     marginBottom: 4,
     whiteSpace: 'pre-line',
+    overflowWrap: 'break-word',
+    wordBreak: 'break-word',
   },
 
   bubbleUser: {
@@ -550,6 +552,8 @@ const styles = {
     maxWidth: '85%',
     marginBottom: 4,
     marginLeft: 'auto',
+    overflowWrap: 'break-word',
+    wordBreak: 'break-word',
   },
 
   note: {
@@ -607,10 +611,23 @@ let msgId = 0;
 const nextId = () => `m${++msgId}-${Date.now()}`;
 
 /* =========================================================
+function useWindowWidth() {
+  const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  return width;
+}
+
+/* =========================================================
    CHATBOT COMPONENT
 ========================================================= */
 
 export default function Chatbot({ onBook }) {
+  const winWidth = useWindowWidth();
+  const isSmall = winWidth <= 480;
   const [open, setOpen] = useState(false);
 
   const [messages, setMessages] = useState([
@@ -848,7 +865,14 @@ export default function Chatbot({ onBook }) {
 
       <button
         onClick={() => setOpen((value) => !value)}
-        style={styles.fab}
+        style={{
+          ...styles.fab,
+          bottom: isSmall ? 16 : 20,
+          right: isSmall ? 16 : 20,
+          width: isSmall ? 50 : 56,
+          height: isSmall ? 50 : 56,
+          fontSize: isSmall ? 22 : 24,
+        }}
         aria-label={
           open
             ? 'Close chat assistant'
@@ -863,7 +887,19 @@ export default function Chatbot({ onBook }) {
 
       {open && (
         <div
-          style={styles.panel}
+          style={{
+            ...styles.panel,
+            ...(isSmall ? {
+              bottom: 74,
+              left: 10,
+              right: 10,
+              width: 'auto',
+              maxWidth: 'calc(100vw - 20px)',
+              height: 'min(520px, calc(100vh - 86px))',
+              maxHeight: 'none',
+              borderRadius: 18,
+            } : {}),
+          }}
           role="dialog"
           aria-label="HomeoDesk chat assistant"
         >

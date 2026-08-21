@@ -69,23 +69,33 @@ const C = {
 };
 
 const S = {
-  page: { fontFamily: "'Inter', sans-serif", background: C.cream, color: '#1a1a1a', minHeight: '100vh' },
-  container: { maxWidth: 1100, margin: '0 auto', padding: '0 20px' },
-  card: { background: '#fff', borderRadius: 20, padding: 24, border: '1px solid rgba(27,67,50,0.08)', marginBottom: 16 },
-  darkCard: { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20, padding: 24, marginBottom: 16 },
-  input: { width: '100%', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 10, padding: '10px 14px', color: '#fff', fontFamily: 'Inter,sans-serif', fontSize: 14, outline: 'none', boxSizing: 'border-box' },
-  inputLight: { width: '100%', background: '#fff', border: '1px solid rgba(27,67,50,0.15)', borderRadius: 10, padding: '10px 14px', color: '#1a1a1a', fontFamily: 'Inter,sans-serif', fontSize: 14, outline: 'none', boxSizing: 'border-box' },
+  page: { fontFamily: "'Inter', sans-serif", background: C.cream, color: '#1a1a1a', minHeight: '100vh', width: '100%', overflowX: 'hidden' },
+  container: { maxWidth: 1100, margin: '0 auto', padding: '0 20px', width: '100%', boxSizing: 'border-box' },
+  card: { background: '#fff', borderRadius: 20, padding: 24, border: '1px solid rgba(27,67,50,0.08)', marginBottom: 16, maxWidth: '100%', boxSizing: 'border-box' },
+  darkCard: { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20, padding: 24, marginBottom: 16, maxWidth: '100%', boxSizing: 'border-box' },
+  input: { width: '100%', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 10, padding: '10px 14px', color: '#fff', fontFamily: 'Inter,sans-serif', fontSize: 14, outline: 'none', boxSizing: 'border-box', maxWidth: '100%' },
+  inputLight: { width: '100%', background: '#fff', border: '1px solid rgba(27,67,50,0.15)', borderRadius: 10, padding: '10px 14px', color: '#1a1a1a', fontFamily: 'Inter,sans-serif', fontSize: 14, outline: 'none', boxSizing: 'border-box', maxWidth: '100%' },
   label: { fontSize: 11, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: 6 },
   labelLight: { fontSize: 11, color: '#6b7280', textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: 6 },
-  btnGold: { background: `linear-gradient(135deg,${C.gold},#d4b96a)`, color: C.green, fontWeight: 700, border: 'none', borderRadius: 999, padding: '12px 26px', cursor: 'pointer', fontSize: 14, display: 'inline-block' },
-  btnGreen: { background: C.green, color: '#fff', fontWeight: 600, border: 'none', borderRadius: 10, padding: '10px 20px', cursor: 'pointer', fontSize: 14 },
-  btnOutline: { background: 'transparent', color: C.green, border: `2px solid ${C.green}`, borderRadius: 10, padding: '9px 18px', cursor: 'pointer', fontSize: 13, fontWeight: 600 },
-  btnDanger: { background: '#dc2626', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 16px', cursor: 'pointer', fontSize: 13 },
+  btnGold: { background: `linear-gradient(135deg,${C.gold},#d4b96a)`, color: C.green, fontWeight: 700, border: 'none', borderRadius: 999, padding: '12px 26px', cursor: 'pointer', fontSize: 14, display: 'inline-block', textAlign: 'center' },
+  btnGreen: { background: C.green, color: '#fff', fontWeight: 600, border: 'none', borderRadius: 10, padding: '10px 20px', cursor: 'pointer', fontSize: 14, textAlign: 'center' },
+  btnOutline: { background: 'transparent', color: C.green, border: `2px solid ${C.green}`, borderRadius: 10, padding: '9px 18px', cursor: 'pointer', fontSize: 13, fontWeight: 600, textAlign: 'center' },
+  btnDanger: { background: '#dc2626', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 16px', cursor: 'pointer', fontSize: 13, textAlign: 'center' },
   sectionH: { fontFamily: 'Playfair Display, serif', color: '#fff', fontSize: 22, fontWeight: 700, marginBottom: 20 },
   sectionHLight: { fontFamily: 'Playfair Display, serif', color: C.green, fontSize: 22, fontWeight: 700, marginBottom: 20 },
   tag: { fontSize: 12, color: C.sage, background: 'rgba(82,183,136,0.1)', border: '1px solid rgba(82,183,136,0.25)', borderRadius: 999, padding: '3px 12px', display: 'inline-block', marginRight: 6, marginBottom: 6 },
   badge: (color) => ({ background: color, color: '#fff', borderRadius: 999, padding: '2px 10px', fontSize: 11, fontWeight: 600 }),
 };
+
+function useWindowWidth() {
+  const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  return width;
+}
 
 /* ─────────────────────────────────────────────
    SHARED COMPONENTS
@@ -141,30 +151,33 @@ function normalizeBooking(record, kind) {
 ───────────────────────────────────────────── */
 
 const DIET_TEMPLATES = [
-  { emoji: '🌿', title: 'Anti-Inflammatory Diet', condition: 'Arthritis, Chronic Pain',
+  {
+    emoji: '🌿', title: 'Anti-Inflammatory Diet', condition: 'Arthritis, Chronic Pain',
     meals: ['Warm turmeric milk', 'Brown rice + moong dal', 'Steamed veggies', 'Herbal tea'],
-    avoid: 'Refined sugar, Fried foods, Red meat', include: 'Turmeric, Ginger, Berries, Leafy greens' },
-  { emoji: '🌸', title: 'Hormone-Balancing Diet', condition: 'PCOS, Hormonal Imbalance',
+    avoid: 'Refined sugar, Fried foods, Red meat', include: 'Turmeric, Ginger, Berries, Leafy greens'
+  },
+  {
+    emoji: '🌸', title: 'Hormone-Balancing Diet', condition: 'PCOS, Hormonal Imbalance',
     meals: ['Sprouts + coconut water', 'Millet roti + rajma', 'Flaxseed water', 'Quinoa dinner'],
-    avoid: 'White flour, Packaged juices, Excess dairy', include: 'Flaxseeds, Fenugreek, Cinnamon, Whole grains' },
-  { emoji: '🛡️', title: 'Immunity-Boosting Diet', condition: 'Recurrent Infections',
+    avoid: 'White flour, Packaged juices, Excess dairy', include: 'Flaxseeds, Fenugreek, Cinnamon, Whole grains'
+  },
+  {
+    emoji: '🛡️', title: 'Immunity-Boosting Diet', condition: 'Recurrent Infections',
     meals: ['Amla juice + idli', 'Tulsi-ginger tea', 'Rice + sambar + buttermilk', 'Turmeric milk'],
-    avoid: 'Cold drinks, Ice cream, Junk food', include: 'Amla, Tulsi, Giloy, Citrus, Garlic' },
-  { emoji: '🌙', title: 'Better Sleep Diet', condition: 'Insomnia, Stress Support',
-    meals: ['Warm chamomile/haldi tea', 'Khichdi + ghee (small portion)', 'Steamed vegetables with cumin', 'Magnesium-rich bedtime snack'],
-    avoid: 'Late-night caffeine, Heavy spicy meals', include: 'Warm liquids, Magnesium foods, Gentle carbs' },
-  { emoji: '⚡', title: 'Energy & Focus Diet', condition: 'Fatigue, Low Energy',
-    meals: ['Oats + berries', 'Moong dal soup + brown rice', 'Lemon-ginger water', 'Roasted chana/seed snack'],
-    avoid: 'Sugary desserts, Excess processed carbs', include: 'Protein + fiber, Ginger, Turmeric' },
-  { emoji: '🫀', title: 'Heart-Healthy Diet', condition: 'Cholesterol Support',
-    meals: ['Vegetable soup + whole grains', 'Moong/rajma bowl with salad', 'Herbal detox water', 'Curd/buttermilk (if suits you)'],
-    avoid: 'Trans fats, Deep-fried items, Excess red meat', include: 'Omega-3 sources, Leafy greens, Flax/chia' },
+    avoid: 'Cold drinks, Ice cream, Junk food', include: 'Amla, Tulsi, Giloy, Citrus, Garlic'
+  },
+  {
+    emoji: '🌙', title: 'Better Sleep Diet', condition: 'Insomnia, Stress Support',
+    meals: ['Warm chamomile/haldi tea', 'Khichdi + ghee (small portion)', 'Soaked almonds', 'Pumpkin seeds'],
+    avoid: 'Caffeine after 4 PM, Heavy dinners, Sugar', include: 'Chamomile, Nutmeg, Warm milk, Bananas, Walnuts'
+  },
 ];
 
-/* ─────────────────────────────────────────────
-   PUBLIC SITE
-───────────────────────────────────────────── */
 function PublicSite({ onNavigate }) {
+  const winWidth = useWindowWidth();
+  const isMobile = winWidth <= 768;
+  const isSmall = winWidth <= 480;
+
   const [tab, setTab] = useState('home');
   const [bookForm, setBookForm] = useState({ firstName: '', lastName: '', phone: '', email: '', date: '', timeSlot: '9:00 AM', type: '', concern: '' });
   const [onlineForm, setOnlineForm] = useState({ name: '', phone: '', email: '', date: '', timeSlot: '9:00 AM – 10:00 AM', concern: '' });
@@ -221,69 +234,64 @@ function PublicSite({ onNavigate }) {
   };
 
   const navTabs = [
-    ['home','🏠 Home'],['online','💻 Online Consult'],['booking','📅 Book Appt'],
-    ['diet','🥗 Diet Plans'],['feedback','⭐ Feedback'],['login','🔐 Login'],
+    ['home', '🏠 Home'], ['online', '💻 Online Consult'], ['booking', '📅 Book Appt'],
+    ['diet', '🥗 Diet Plans'], ['feedback', '⭐ Feedback'], ['login', '🔐 Login'],
   ];
 
   return (
     <div style={S.page}>
-      {/* ── HERO ── */}
-      <section style={{ background: `linear-gradient(135deg,${C.greenDark},${C.green},${C.greenMid})`, padding: '90px 24px 70px', display: 'flex', alignItems: 'center' }}>
-        <div style={{ ...S.container, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center' }}>
-          <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(82,183,136,0.18)', color: C.sage, fontSize: 11, fontWeight: 600, letterSpacing: 2, textTransform: 'uppercase', padding: '6px 14px', borderRadius: 999, marginBottom: 24 }}>🌿 Natural Healing Since 2005</div>
-            <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2rem,5vw,3.2rem)', fontWeight: 700, color: '#fff', lineHeight: 1.15, marginBottom: 16 }}>Heal from <span style={{ color: C.gold, fontStyle: 'italic' }}>Within.</span></h1>
-            <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 16, lineHeight: 1.7, marginBottom: 32, maxWidth: 440 }}>Evidence-based homeopathic care tailored to your unique constitution — addressing chronic illness, emotional wellness, and preventive health with zero side effects.</p>
-            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 36 }}>
-              <button onClick={() => setTab('booking')} style={S.btnGold}>📅 Book Appointment</button>
-              <button onClick={() => setTab('online')} style={{ ...S.btnGold, background: 'transparent', color: '#fff', border: '2px solid rgba(255,255,255,0.6)', fontWeight: 500 }}>💻 Online Consultation</button>
-            </div>
-            <div style={{ display: 'flex', gap: 36, flexWrap: 'wrap' }}>
-              {[['2000+','Patients Healed'],['18+','Years Exp.'],['95%','Recovery Rate']].map(([n,l]) => (
-                <div key={l}><div style={{ fontFamily: 'Playfair Display,serif', fontSize: 26, fontWeight: 700, color: C.gold }}>{n}</div><div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', letterSpacing: 1 }}>{l}</div></div>
-              ))}
-            </div>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div style={{ width: 260, height: 260, borderRadius: '50%', border: '4px solid #C9A84C', boxShadow: '0 16px 36px rgba(0,0,0,0.35)', overflow: 'hidden', flexShrink: 0, background: '#0d2b1e', marginBottom: -28, zIndex: 0 }}>
-                <img src="/doctor.jpg" alt="Dr. Isha Khimani" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%' }} />
-              </div>
-              <div style={{ background: 'rgba(13,43,30,0.95)', borderRadius: 16, padding: '14px 22px', textAlign: 'center', width: 250, border: '1px solid rgba(201,168,76,0.35)', boxShadow: '0 10px 28px rgba(0,0,0,0.3)', position: 'relative', zIndex: 1 }}>
-                <div style={{ fontFamily: 'Playfair Display,serif', color: '#fff', fontSize: 17, fontWeight: 600 }}>Dr. Isha Khimani</div>
-                <div style={{ color: C.sage, fontSize: 12, marginTop: 2 }}>BHMS, MD (Homeopathy)</div>
-                <StarRating value={5} />
-              </div>
-              <div style={{ position: 'absolute', top: 10, left: -16, background: C.gold, color: C.green, borderRadius: 16, padding: '10px 16px', boxShadow: '0 8px 24px rgba(201,168,76,0.4)', zIndex: 2 }}>
-                <div style={{ fontFamily: 'Playfair Display,serif', fontWeight: 700, fontSize: 20, lineHeight: 1 }}>18+</div>
-                <div style={{ fontSize: 11, fontWeight: 700 }}>Years Practice</div>
-              </div>
+      {/* ── HEADER NAV ── */}
+      <div style={{
+        position: isMobile ? 'sticky' : 'absolute',
+        top: isMobile ? 0 : 18,
+        left: 0, right: 0, zIndex: 60,
+        background: isMobile ? `linear-gradient(135deg,${C.greenDark},${C.green})` : 'transparent',
+        padding: isMobile ? (isSmall ? '8px 10px' : '10px 14px') : 0,
+        boxShadow: isMobile ? '0 4px 12px rgba(0,0,0,0.2)' : 'none',
+        pointerEvents: 'none'
+      }}>
+        <div style={{
+          ...S.container,
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          justifyContent: 'space-between',
+          alignItems: isMobile ? 'stretch' : 'center',
+          gap: isMobile ? (isSmall ? 8 : 10) : 16,
+          pointerEvents: 'auto',
+          padding: isMobile ? 0 : '0 20px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: isMobile ? 'center' : 'flex-start', gap: 10 }}>
+            <div style={{ height: isSmall ? 32 : (isMobile ? 36 : 44), display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <img src="/logo-full.png" alt="Dr. Isha's Homeopathic Clinic" style={{ height: '100%', width: 'auto', maxWidth: isSmall ? 140 : 160, objectFit: 'contain' }} />
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* ── HEADER NAV (moved from sticky tab bar) ── */}
-      <div style={{ position: 'absolute', top: 18, left: 0, right: 0, zIndex: 60, pointerEvents: 'none' }}>
-        <div style={{ ...S.container, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, pointerEvents: 'auto' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ height: 44, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', flexShrink: 0 }}><img src="/logo-full.png" alt="Dr. Isha's Homeopathic Clinic" style={{ height: '100%', width: 'auto', maxWidth: 160, objectFit: 'contain' }} /></div>
-          </div>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          <div
+            className="hd-scroll-x"
+            style={{
+              display: 'flex',
+              gap: isSmall ? 4 : 6,
+              overflowX: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              paddingBottom: isMobile ? 4 : 0,
+              justifyContent: isMobile ? 'flex-start' : 'flex-end',
+              maxWidth: '100%'
+            }}
+          >
             {navTabs.map(([id, label]) => (
               <button
                 key={id}
                 onClick={() => setTab(id)}
                 style={{
                   background: tab === id ? 'rgba(201,168,76,0.22)' : 'rgba(255,255,255,0.08)',
-                  color: tab === id ? C.gold : 'rgba(255,255,255,0.8)',
+                  color: tab === id ? C.gold : 'rgba(255,255,255,0.85)',
                   border: tab === id ? `1px solid rgba(201,168,76,0.35)` : '1px solid rgba(255,255,255,0.15)',
                   borderRadius: 999,
-                  padding: '8px 12px',
+                  padding: isSmall ? '5px 10px' : (isMobile ? '6px 12px' : '8px 12px'),
                   cursor: 'pointer',
-                  fontSize: 12,
+                  fontSize: isSmall ? 11 : (isMobile ? 11.5 : 12),
                   fontWeight: tab === id ? 700 : 600,
-                  whiteSpace: 'nowrap'
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0
                 }}
               >
                 {label}
@@ -293,23 +301,59 @@ function PublicSite({ onNavigate }) {
         </div>
       </div>
 
-      <div style={{ ...S.container, padding: '40px 20px' }}>
+      {/* ── HERO ── */}
+      <section style={{ background: `linear-gradient(135deg,${C.greenDark},${C.green},${C.greenMid})`, padding: isSmall ? '30px 14px 40px' : (isMobile ? '40px 16px 50px' : '90px 24px 70px'), display: 'flex', alignItems: 'center' }}>
+        <div style={{ ...S.container, display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isSmall ? 28 : (isMobile ? 36 : 48), alignItems: 'center' }}>
+          <div style={{ textAlign: isMobile ? 'center' : 'left' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(82,183,136,0.18)', color: C.sage, fontSize: isSmall ? 10 : 11, fontWeight: 600, letterSpacing: isSmall ? 1.5 : 2, textTransform: 'uppercase', padding: isSmall ? '5px 12px' : '6px 14px', borderRadius: 999, marginBottom: isSmall ? 18 : 24 }}>🌿 Natural Healing Since 2005</div>
+            <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: isSmall ? '1.85rem' : (isMobile ? '2.1rem' : 'clamp(2rem,5vw,3.2rem)'), fontWeight: 700, color: '#fff', lineHeight: 1.15, marginBottom: 16 }}>Heal from <span style={{ color: C.gold, fontStyle: 'italic' }}>Within.</span></h1>
+            <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: isSmall ? 13.5 : (isMobile ? 14.5 : 16), lineHeight: 1.7, marginBottom: 32, maxWidth: 440, margin: isMobile ? '0 auto 32px' : '0 0 32px' }}>Evidence-based homeopathic care tailored to your unique constitution — addressing chronic illness, emotional wellness, and preventive health with zero side effects.</p>
+            <div style={{ display: 'flex', gap: isSmall ? 10 : 14, flexWrap: 'wrap', marginBottom: 36, justifyContent: isMobile ? 'center' : 'flex-start' }}>
+              <button onClick={() => setTab('booking')} style={{ ...S.btnGold, width: isSmall ? '100%' : 'auto', padding: isSmall ? '11px 20px' : '12px 26px' }}>📅 Book Appointment</button>
+              <button onClick={() => setTab('online')} style={{ ...S.btnGold, background: 'transparent', color: '#fff', border: '2px solid rgba(255,255,255,0.6)', fontWeight: 500, width: isSmall ? '100%' : 'auto', padding: isSmall ? '11px 20px' : '12px 26px' }}>💻 Online Consultation</button>
+            </div>
+            <div style={{ display: 'flex', gap: isSmall ? 16 : (isMobile ? 24 : 36), flexWrap: 'wrap', justifyContent: isMobile ? 'center' : 'flex-start' }}>
+              {[['2000+', 'Patients Healed'], ['18+', 'Years Exp.'], ['95%', 'Recovery Rate']].map(([n, l]) => (
+                <div key={l}><div style={{ fontFamily: 'Playfair Display,serif', fontSize: isSmall ? 22 : 26, fontWeight: 700, color: C.gold }}>{n}</div><div style={{ fontSize: isSmall ? 10 : 11, color: 'rgba(255,255,255,0.45)', letterSpacing: 1 }}>{l}</div></div>
+              ))}
+            </div>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: 300 }}>
+              <div style={{ width: isSmall ? 190 : 260, height: isSmall ? 190 : 260, borderRadius: '50%', border: '4px solid #C9A84C', boxShadow: '0 16px 36px rgba(0,0,0,0.35)', overflow: 'hidden', flexShrink: 0, background: '#0d2b1e', marginBottom: -28, zIndex: 0 }}>
+                <img src="/doctor.jpg" alt="Dr. Isha Khimani" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%' }} />
+              </div>
+              <div style={{ background: 'rgba(13,43,30,0.95)', borderRadius: 16, padding: isSmall ? '12px 18px' : '14px 22px', textAlign: 'center', width: isSmall ? '100%' : 250, maxWidth: 250, border: '1px solid rgba(201,168,76,0.35)', boxShadow: '0 10px 28px rgba(0,0,0,0.3)', position: 'relative', zIndex: 1, boxSizing: 'border-box' }}>
+                <div style={{ fontFamily: 'Playfair Display,serif', color: '#fff', fontSize: isSmall ? 16 : 17, fontWeight: 600 }}>Dr. Isha Khimani</div>
+                <div style={{ color: C.sage, fontSize: 12, marginTop: 2 }}>BHMS, MD (Homeopathy)</div>
+                <StarRating value={5} />
+              </div>
+              <div style={{ position: 'absolute', top: 10, left: isSmall ? 0 : -16, background: C.gold, color: C.green, borderRadius: 16, padding: isSmall ? '8px 12px' : '10px 16px', boxShadow: '0 8px 24px rgba(201,168,76,0.4)', zIndex: 2 }}>
+                <div style={{ fontFamily: 'Playfair Display,serif', fontWeight: 700, fontSize: isSmall ? 18 : 20, lineHeight: 1 }}>18+</div>
+                <div style={{ fontSize: isSmall ? 10 : 11, fontWeight: 700 }}>Years Practice</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div style={{ ...S.container, padding: isSmall ? '20px 12px' : (isMobile ? '24px 16px' : '40px 20px') }}>
 
         {/* ── HOME TAB ── */}
         {tab === 'home' && (
           <div>
-            <h2 style={{ ...S.sectionHLight, textAlign: 'center', fontSize: 28, marginBottom: 4 }}>Comprehensive care for every stage of life</h2>
+            <h2 style={{ ...S.sectionHLight, textAlign: 'center', fontSize: isSmall ? 20 : (isMobile ? 22 : 28), marginBottom: 4 }}>Comprehensive care for every stage of life</h2>
             <Divider />
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 16, marginBottom: 48 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit,minmax(280px,1fr))', gap: 16, marginBottom: 48 }}>
               {[
-                ['🌿','Chronic Disease Care','Arthritis, asthma, IBS, skin disorders through individualized constitutional treatment.'],
-                ['🧠','Mental & Emotional Wellness','Support for anxiety, depression, stress and sleep disorders — no dependency-forming meds.'],
-                ['👶','Pediatric Homeopathy','Gentle remedies for children\'s infections, allergies, and behavioral concerns.'],
-                ['🌸','Women\'s Health','PCOS, menstrual irregularities, menopause and hormonal balance naturally.'],
-                ['💻','Online Consultation','Expert care from home via video call with follow-up support included.'],
-                ['🔬','Acute & Preventive Care','Rapid relief for fevers and seasonal illness, plus immunity-building protocols.'],
-              ].map(([icon,title,desc]) => (
-                <div key={title} style={S.card}>
+                ['🌿', 'Chronic Disease Care', 'Arthritis, asthma, IBS, skin disorders through individualized constitutional treatment.'],
+                ['🧠', 'Mental & Emotional Wellness', 'Support for anxiety, depression, stress and sleep disorders — no dependency-forming meds.'],
+                ['👶', 'Pediatric Homeopathy', 'Gentle remedies for children\'s infections, allergies, and behavioral concerns.'],
+                ['🌸', 'Women\'s Health', 'PCOS, menstrual irregularities, menopause and hormonal balance naturally.'],
+                ['💻', 'Online Consultation', 'Expert care from home via video call with follow-up support included.'],
+                ['🔬', 'Acute & Preventive Care', 'Rapid relief for fevers and seasonal illness, plus immunity-building protocols.'],
+              ].map(([icon, title, desc]) => (
+                <div key={title} style={{ ...S.card, padding: isSmall ? '18px 16px' : 24 }}>
                   <div style={{ fontSize: 32, marginBottom: 12 }}>{icon}</div>
                   <h3 style={{ fontFamily: 'Playfair Display,serif', color: C.green, fontSize: 16, fontWeight: 600, marginBottom: 8 }}>{title}</h3>
                   <p style={{ color: '#6b7280', fontSize: 13, lineHeight: 1.6, marginBottom: 12 }}>{desc}</p>
@@ -324,30 +368,28 @@ function PublicSite({ onNavigate }) {
                       • Follow-up to adjust remedies and diet over time
                     </div>
                   </div>
-
-
                 </div>
               ))}
             </div>
 
             {/* Doctor */}
-            <div style={{ background: `linear-gradient(135deg,${C.green},${C.greenDark})`, borderRadius: 24, padding: 40, marginBottom: 48 }}>
+            <div style={{ background: `linear-gradient(135deg,${C.green},${C.greenDark})`, borderRadius: 24, padding: isSmall ? '20px 14px' : (isMobile ? 24 : 40), marginBottom: 48 }}>
               <div style={{ textAlign: 'center', color: C.sage, fontSize: 11, fontWeight: 600, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 6 }}>Meet the Doctor</div>
-              <h2 style={{ ...S.sectionH, textAlign: 'center', marginBottom: 32 }}>Expert care from a trusted <span style={{ color: C.gold }}>healer</span></h2>
-              <div style={{ display: 'flex', gap: 40, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <div style={{ width: 140, height: 140, borderRadius: '50%', border: '4px solid rgba(201,168,76,0.3)', flexShrink: 0, overflow: 'hidden' }}>
+              <h2 style={{ ...S.sectionH, textAlign: 'center', marginBottom: 32, fontSize: isSmall ? 20 : (isMobile ? 22 : 26) }}>Expert care from a trusted <span style={{ color: C.gold }}>healer</span></h2>
+              <div style={{ display: 'flex', gap: isSmall ? 18 : (isMobile ? 24 : 40), alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+                <div style={{ width: isSmall ? 110 : 140, height: isSmall ? 110 : 140, borderRadius: '50%', border: '4px solid rgba(201,168,76,0.3)', flexShrink: 0, overflow: 'hidden' }}>
                   <img src="/doctor.jpg" alt="Dr. Isha Khimani" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
                 </div>
-                <div style={{ flex: 1, minWidth: 260 }}>
-                  <h3 style={{ fontFamily: 'Playfair Display,serif', color: '#fff', fontSize: 26, fontWeight: 700, marginBottom: 4 }}>Dr. Isha Khimani</h3>
+                <div style={{ flex: 1, minWidth: isMobile ? '100%' : 260, textAlign: isMobile ? 'center' : 'left' }}>
+                  <h3 style={{ fontFamily: 'Playfair Display,serif', color: '#fff', fontSize: isSmall ? 22 : 26, fontWeight: 700, marginBottom: 4 }}>Dr. Isha Khimani</h3>
                   <p style={{ color: C.sage, fontSize: 13, marginBottom: 14 }}>BHMS, MD (Homeopathy) · Mumbai University</p>
                   <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14, lineHeight: 1.75, marginBottom: 16 }}>With over 18 years of clinical experience, Dr. Khimani has helped thousands of patients overcome chronic illness, allergies, hormonal disorders, and mental health challenges.</p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 16 }}>
-                    {['Chronic Diseases','Pediatrics','Mental Health','Women\'s Health','Skin Disorders'].map(t => <span key={t} style={S.tag}>{t}</span>)}
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 16, justifyContent: isMobile ? 'center' : 'flex-start' }}>
+                    {['Chronic Diseases', 'Pediatrics', 'Mental Health', 'Women\'s Health', 'Skin Disorders'].map(t => <span key={t} style={S.tag}>{t}</span>)}
                   </div>
-                  <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
-                    {[['18+','Years Practice'],['2000+','Cases Resolved'],['4','Papers Published']].map(([n,l]) => (
-                      <div key={l}><div style={{ fontFamily: 'Playfair Display,serif', fontSize: 22, fontWeight: 700, color: C.gold }}>{n}</div><div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>{l}</div></div>
+                  <div style={{ display: 'flex', gap: isSmall ? 14 : (isMobile ? 20 : 32), flexWrap: 'wrap', justifyContent: isMobile ? 'center' : 'flex-start' }}>
+                    {[['18+', 'Years Practice'], ['2000+', 'Cases Resolved'], ['4', 'Papers Published']].map(([n, l]) => (
+                      <div key={l}><div style={{ fontFamily: 'Playfair Display,serif', fontSize: isSmall ? 20 : 22, fontWeight: 700, color: C.gold }}>{n}</div><div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>{l}</div></div>
                     ))}
                   </div>
                 </div>
@@ -355,15 +397,15 @@ function PublicSite({ onNavigate }) {
             </div>
 
             {/* Testimonials */}
-            <h2 style={{ ...S.sectionHLight, textAlign: 'center', marginBottom: 4 }}>Lives transformed by <span style={{ color: C.gold, fontStyle: 'italic' }}>natural healing</span></h2>
+            <h2 style={{ ...S.sectionHLight, textAlign: 'center', marginBottom: 4, fontSize: isSmall ? 20 : (isMobile ? 22 : 26) }}>Lives transformed by <span style={{ color: C.gold, fontStyle: 'italic' }}>natural healing</span></h2>
             <Divider />
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit,minmax(260px,1fr))', gap: 16 }}>
               {[
-                ['PS','Priya Sharma','Migraine relief in 4 months after years of struggle. Dr. Khimani gave me my life back. Truly remarkable approach.','Patient since 2021'],
-                ['RP','Rajesh Patel','My son\'s chronic asthma improved dramatically. We\'ve reduced his inhaler use by 90%. Truly patient-first approach.','Patient since 2020'],
-                ['AV','Ananya Verma','PCOS had been affecting me for years. Hormones balanced naturally without harsh side effects. Remarkable results.','Patient since 2022'],
-              ].map(([init,name,text,role]) => (
-                <div key={name} style={{ ...S.card, background: C.cream }}>
+                ['PS', 'Priya Sharma', 'Migraine relief in 4 months after years of struggle. Dr. Khimani gave me my life back. Truly remarkable approach.', 'Patient since 2021'],
+                ['RP', 'Rajesh Patel', 'My son\'s chronic asthma improved dramatically. We\'ve reduced his inhaler use by 90%. Truly patient-first approach.', 'Patient since 2020'],
+                ['AV', 'Ananya Verma', 'PCOS had been affecting me for years. Hormones balanced naturally without harsh side effects. Remarkable results.', 'Patient since 2022'],
+              ].map(([init, name, text, role]) => (
+                <div key={name} style={{ ...S.card, background: C.cream, padding: isSmall ? '18px 16px' : 24 }}>
                   <StarRating value={5} />
                   <p style={{ color: '#4b5563', fontSize: 14, fontStyle: 'italic', lineHeight: 1.7, margin: '14px 0 18px' }}>"{text}"</p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -379,32 +421,32 @@ function PublicSite({ onNavigate }) {
         {/* ── ONLINE CONSULT TAB ── */}
         {tab === 'online' && (
           <div style={{ maxWidth: 720, margin: '0 auto' }}>
-            <h2 style={{ ...S.sectionHLight, marginBottom: 8 }}>💻 Online Consultation</h2>
+            <h2 style={{ ...S.sectionHLight, marginBottom: 8, fontSize: isMobile ? 22 : 26 }}>💻 Online Consultation</h2>
             <p style={{ color: '#6b7280', marginBottom: 28 }}>Consult Dr. Khimani from anywhere in India via secure video call. Same quality care, zero travel.</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 32 }}>
-              {[['🕐','Flexible Timing','Morning & evening slots available'],['🔒','Secure & Private','Encrypted video consultation'],['💊','E-Prescription','Digital prescription post-consultation'],['🔄','Follow-up Included','Free 15-min follow-up within 7 days']].map(([ic,t,d]) => (
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 16, marginBottom: 32 }}>
+              {[['🕐', 'Flexible Timing', 'Morning & evening slots available'], ['🔒', 'Secure & Private', 'Encrypted video consultation'], ['💊', 'E-Prescription', 'Digital prescription post-consultation'], ['🔄', 'Follow-up Included', 'Free 15-min follow-up within 7 days']].map(([ic, t, d]) => (
                 <div key={t} style={S.card}><div style={{ fontSize: 28, marginBottom: 10 }}>{ic}</div><h4 style={{ fontFamily: 'Playfair Display,serif', color: C.green, fontWeight: 600, marginBottom: 4 }}>{t}</h4><p style={{ color: '#9ca3af', fontSize: 13 }}>{d}</p></div>
               ))}
             </div>
-            <div style={{ background: `linear-gradient(135deg,${C.green},${C.greenDark})`, borderRadius: 20, padding: 32 }}>
-              <h3 style={S.sectionH}>Book Online Consultation</h3>
+            <div style={{ background: `linear-gradient(135deg,${C.green},${C.greenDark})`, borderRadius: 20, padding: isSmall ? '18px 14px' : (isMobile ? 20 : 32) }}>
+              <h3 style={{ ...S.sectionH, fontSize: isSmall ? 20 : (isMobile ? 22 : 24) }}>Book Online Consultation</h3>
               <Alert msg={onlineAlert.msg} type={onlineAlert.type} />
               <form onSubmit={submitOnlineConsult}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14, marginBottom: 14 }}>
                   <div><label style={S.label}>Your Name</label><input style={S.input} placeholder="Arjun Sharma" value={onlineForm.name} onChange={e => setOnlineForm({ ...onlineForm, name: e.target.value })} required /></div>
                   <div><label style={S.label}>Phone</label><input style={S.input} placeholder="+91 98765 43210" value={onlineForm.phone} onChange={e => setOnlineForm({ ...onlineForm, phone: e.target.value })} required /></div>
                 </div>
                 <div style={{ marginBottom: 14 }}><label style={S.label}>Email</label><input style={S.input} type="email" placeholder="arjun@email.com" value={onlineForm.email} onChange={e => setOnlineForm({ ...onlineForm, email: e.target.value })} required /></div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14, marginBottom: 14 }}>
                   <div><label style={S.label}>Preferred Date</label><input style={S.input} type="date" value={onlineForm.date} onChange={e => setOnlineForm({ ...onlineForm, date: e.target.value })} required /></div>
                   <div><label style={S.label}>Time Slot</label>
                     <select style={{ ...S.input, background: 'rgba(27,67,50,0.9)' }} value={onlineForm.timeSlot} onChange={e => setOnlineForm({ ...onlineForm, timeSlot: e.target.value })}>
-                      {['9:00 AM – 10:00 AM','11:00 AM – 12:00 PM','4:00 PM – 5:00 PM','6:00 PM – 7:00 PM'].map(t => <option key={t}>{t}</option>)}
+                      {['9:00 AM – 10:00 AM', '11:00 AM – 12:00 PM', '4:00 PM – 5:00 PM', '6:00 PM – 7:00 PM'].map(t => <option key={t}>{t}</option>)}
                     </select>
                   </div>
                 </div>
                 <div style={{ marginBottom: 14 }}><label style={S.label}>Health Concern</label><textarea rows={3} style={{ ...S.input, resize: 'none' }} placeholder="Describe your health concern..." value={onlineForm.concern} onChange={e => setOnlineForm({ ...onlineForm, concern: e.target.value })} required /></div>
-                <button type="submit" disabled={onlineSubmitting} style={{ ...S.btnGold, width: '100%', padding: 14, opacity: onlineSubmitting ? 0.7 : 1, cursor: onlineSubmitting ? 'not-allowed' : 'pointer' }}>{onlineSubmitting ? 'Submitting…' : 'Request Online Consultation →'}</button>
+                <button type="submit" disabled={onlineSubmitting} style={{ ...S.btnGold, width: '100%', padding: isSmall ? 12 : 14, opacity: onlineSubmitting ? 0.7 : 1, cursor: onlineSubmitting ? 'not-allowed' : 'pointer' }}>{onlineSubmitting ? 'Submitting…' : 'Request Online Consultation →'}</button>
                 <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, textAlign: 'center', marginTop: 10 }}>A Zoom/Meet link will be shared to your email & WhatsApp</p>
               </form>
             </div>
@@ -414,22 +456,22 @@ function PublicSite({ onNavigate }) {
         {/* ── BOOKING TAB ── */}
         {tab === 'booking' && (
           <div style={{ maxWidth: 700, margin: '0 auto' }}>
-            <h2 style={{ ...S.sectionHLight, marginBottom: 4 }}>📅 Book an Appointment</h2>
-            <p style={{ color: '#6b7280', marginBottom: 28 }}>Choose in-clinic or online. We'll confirm your slot within 2 hours.</p>
+            <h2 style={{ ...S.sectionHLight, marginBottom: 4, fontSize: isSmall ? 20 : (isMobile ? 22 : 26) }}>📅 Book an Appointment</h2>
+            <p style={{ color: '#6b7280', marginBottom: 28, fontSize: isSmall ? 13.5 : 14 }}>Choose in-clinic or online. We'll confirm your slot within 2 hours.</p>
             <Alert msg={alert.msg} type={alert.type} />
-            <div style={S.card}>
+            <div style={{ ...S.card, padding: isSmall ? '18px 14px' : (isMobile ? 20 : 24) }}>
               <form onSubmit={submitBooking}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14, marginBottom: 14 }}>
                   <div><label style={S.labelLight}>First Name</label><input style={S.inputLight} placeholder="Arjun" value={bookForm.firstName} onChange={e => setBookForm({ ...bookForm, firstName: e.target.value })} required /></div>
                   <div><label style={S.labelLight}>Last Name</label><input style={S.inputLight} placeholder="Sharma" value={bookForm.lastName} onChange={e => setBookForm({ ...bookForm, lastName: e.target.value })} required /></div>
                 </div>
                 <div style={{ marginBottom: 14 }}><label style={S.labelLight}>Phone Number</label><input style={S.inputLight} placeholder="+91 98765 43210" value={bookForm.phone} onChange={e => setBookForm({ ...bookForm, phone: e.target.value })} required /></div>
                 <div style={{ marginBottom: 14 }}><label style={S.labelLight}>Email</label><input style={S.inputLight} type="email" placeholder="arjun@email.com" value={bookForm.email} onChange={e => setBookForm({ ...bookForm, email: e.target.value })} /></div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14, marginBottom: 14 }}>
                   <div><label style={S.labelLight}>Preferred Date</label><input style={S.inputLight} type="date" value={bookForm.date} onChange={e => setBookForm({ ...bookForm, date: e.target.value })} required /></div>
                   <div><label style={S.labelLight}>Time Slot</label>
                     <select style={{ ...S.inputLight }} value={bookForm.timeSlot} onChange={e => setBookForm({ ...bookForm, timeSlot: e.target.value })}>
-                      {['9:00 AM','10:00 AM','11:00 AM','12:00 PM','4:00 PM','5:00 PM','6:00 PM'].map(t => <option key={t}>{t}</option>)}
+                      {['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '4:00 PM', '5:00 PM', '6:00 PM'].map(t => <option key={t}>{t}</option>)}
                     </select>
                   </div>
                 </div>
@@ -442,13 +484,13 @@ function PublicSite({ onNavigate }) {
                   </select>
                 </div>
                 <div style={{ marginBottom: 20 }}><label style={S.labelLight}>Your Health Concern</label><textarea rows={3} style={{ ...S.inputLight, resize: 'none' }} placeholder="Briefly describe your concern..." value={bookForm.concern} onChange={e => setBookForm({ ...bookForm, concern: e.target.value })} required /></div>
-                <button type="submit" disabled={bookSubmitting} style={{ ...S.btnGold, width: '100%', padding: 14, opacity: bookSubmitting ? 0.7 : 1, cursor: bookSubmitting ? 'not-allowed' : 'pointer' }}>{bookSubmitting ? 'Submitting…' : 'Request Appointment →'}</button>
+                <button type="submit" disabled={bookSubmitting} style={{ ...S.btnGold, width: '100%', padding: isSmall ? 12 : 14, opacity: bookSubmitting ? 0.7 : 1, cursor: bookSubmitting ? 'not-allowed' : 'pointer' }}>{bookSubmitting ? 'Submitting…' : 'Request Appointment →'}</button>
                 <p style={{ color: '#9ca3af', fontSize: 11, textAlign: 'center', marginTop: 10 }}>Our team will confirm your slot within 2 hours</p>
               </form>
             </div>
             <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-              {[['📞','Phone','+91 99999 88888','Mon–Sat, 9 AM – 7 PM'],['📍','Address','204 Wellness Tower, CG Road','Ahmedabad, Gujarat 380009'],['🕐','Hours','Mon–Sat: 9:00 AM – 7:00 PM','Sunday: 10 AM – 1 PM (Online)']].map(([ic,l,v,s]) => (
-                <div key={l} style={{ ...S.card, flex: 1, minWidth: 200 }}>
+              {[['📞', 'Phone', '+91 99999 88888', 'Mon–Sat, 9 AM – 7 PM'], ['📍', 'Address', '204 Wellness Tower, CG Road', 'Ahmedabad, Gujarat 380009'], ['🕐', 'Hours', 'Mon–Sat: 9:00 AM – 7:00 PM', 'Sunday: 10 AM – 1 PM (Online)']].map(([ic, l, v, s]) => (
+                <div key={l} style={{ ...S.card, padding: isSmall ? '16px 14px' : 24, flex: isMobile ? '1 1 100%' : '1 1 200px' }}>
                   <div style={{ fontSize: 24, marginBottom: 8 }}>{ic}</div>
                   <div style={{ fontSize: 10, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 2 }}>{l}</div>
                   <div style={{ fontWeight: 600, color: C.green, fontSize: 14 }}>{v}</div>
@@ -462,17 +504,17 @@ function PublicSite({ onNavigate }) {
         {/* ── DIET PLANS TAB ── */}
         {tab === 'diet' && (
           <div>
-            <h2 style={{ ...S.sectionHLight, marginBottom: 4 }}>🥗 Diet Plans & Nutrition</h2>
-            <p style={{ color: '#6b7280', marginBottom: 28 }}>Homeopathic healing works best alongside the right diet. These evidence-based plans complement your treatment.</p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 20 }}>
+            <h2 style={{ ...S.sectionHLight, marginBottom: 4, fontSize: isSmall ? 20 : (isMobile ? 22 : 26) }}>🥗 Diet Plans & Nutrition</h2>
+            <p style={{ color: '#6b7280', marginBottom: 28, fontSize: isSmall ? 13.5 : 14 }}>Homeopathic healing works best alongside the right diet. These evidence-based plans complement your treatment.</p>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit,minmax(300px,1fr))', gap: 20 }}>
               {DIET_TEMPLATES.map((plan) => (
-                <div key={plan.title} style={S.card}>
-                  <div style={{ background: `linear-gradient(135deg,${C.green},${C.greenMid})`, height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48, marginBottom: 16, marginLeft: -24, marginRight: -24, marginTop: -24, borderRadius: '20px 20px 0 0' }}>{plan.emoji}</div>
+                <div key={plan.title} style={{ ...S.card, padding: isSmall ? '18px 16px' : 24 }}>
+                  <div style={{ background: `linear-gradient(135deg,${C.green},${C.greenMid})`, height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48, marginBottom: 16, marginLeft: isSmall ? -16 : -24, marginRight: isSmall ? -16 : -24, marginTop: isSmall ? -16 : -24, borderRadius: '20px 20px 0 0' }}>{plan.emoji}</div>
                   <span style={{ ...S.tag, color: C.gold, borderColor: 'rgba(201,168,76,0.3)', background: 'rgba(201,168,76,0.08)', marginBottom: 10, display: 'inline-block' }}>{plan.condition}</span>
                   <h3 style={{ fontFamily: 'Playfair Display,serif', color: C.green, fontSize: 18, fontWeight: 700, marginBottom: 14 }}>{plan.title}</h3>
                   <div style={{ marginBottom: 12 }}>
                     <div style={{ fontSize: 11, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>Meal Guide</div>
-                    {plan.meals.map((m,i) => <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 4 }}><span style={{ color: C.sage, fontSize: 14 }}>•</span><span style={{ fontSize: 13, color: '#374151' }}>{m}</span></div>)}
+                    {plan.meals.map((m, i) => <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 4 }}><span style={{ color: C.sage, fontSize: 14 }}>•</span><span style={{ fontSize: 13, color: '#374151' }}>{m}</span></div>)}
                   </div>
                   <div style={{ background: '#fef9f0', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 10, padding: 12, marginBottom: 10 }}>
                     <div style={{ fontSize: 11, color: C.gold, fontWeight: 600, marginBottom: 4 }}>✅ Include</div>
@@ -485,11 +527,11 @@ function PublicSite({ onNavigate }) {
                 </div>
               ))}
             </div>
-            <div style={{ ...S.card, background: `linear-gradient(135deg,${C.green},${C.greenDark})`, marginTop: 24 }}>
-              <h3 style={S.sectionH}>💡 General Diet Principles in Homeopathy</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 16 }}>
-                {[['☕ Avoid Coffee & Mint','These antidote homeopathic remedies. Switch to herbal teas.'],['🌡️ Prefer Warm Foods','Warm, freshly cooked meals aid digestion and healing.'],['⏰ Eat on Time','Regular meal timings support constitutional balance.'],['💧 Hydrate Well','8–10 glasses of room-temperature water daily.']].map(([t,d]) => (
-                  <div key={t} style={S.darkCard}><div style={{ fontWeight: 600, color: '#fff', fontSize: 14, marginBottom: 6 }}>{t}</div><p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>{d}</p></div>
+            <div style={{ ...S.card, background: `linear-gradient(135deg,${C.green},${C.greenDark})`, marginTop: 24, padding: isSmall ? '18px 14px' : (isMobile ? 20 : 24) }}>
+              <h3 style={{ ...S.sectionH, fontSize: isSmall ? 18 : 22 }}>💡 General Diet Principles in Homeopathy</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit,minmax(220px,1fr))', gap: 16 }}>
+                {[['☕ Avoid Coffee & Mint', 'These antidote homeopathic remedies. Switch to herbal teas.'], ['🌡️ Prefer Warm Foods', 'Warm, freshly cooked meals aid digestion and healing.'], ['⏰ Eat on Time', 'Regular meal timings support constitutional balance.'], ['💧 Hydrate Well', '8–10 glasses of room-temperature water daily.']].map(([t, d]) => (
+                  <div key={t} style={{ ...S.darkCard, padding: isSmall ? '16px 14px' : 24 }}><div style={{ fontWeight: 600, color: '#fff', fontSize: 14, marginBottom: 6 }}>{t}</div><p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>{d}</p></div>
                 ))}
               </div>
             </div>
@@ -499,18 +541,18 @@ function PublicSite({ onNavigate }) {
         {/* ── FEEDBACK TAB ── */}
         {tab === 'feedback' && (
           <div style={{ maxWidth: 700, margin: '0 auto' }}>
-            <h2 style={{ ...S.sectionHLight, marginBottom: 4 }}>⭐ Share Your Feedback</h2>
-            <p style={{ color: '#6b7280', marginBottom: 28 }}>Your experience helps us serve patients better. We'd love to hear from you.</p>
+            <h2 style={{ ...S.sectionHLight, marginBottom: 4, fontSize: isSmall ? 20 : (isMobile ? 22 : 26) }}>⭐ Share Your Feedback</h2>
+            <p style={{ color: '#6b7280', marginBottom: 28, fontSize: isSmall ? 13.5 : 14 }}>Your experience helps us serve patients better. We'd love to hear from you.</p>
             <Alert msg={feedbackAlert} />
-            <div style={S.card}>
+            <div style={{ ...S.card, padding: isSmall ? '18px 14px' : 24 }}>
               <h3 style={{ fontFamily: 'Playfair Display,serif', color: C.green, fontSize: 18, fontWeight: 600, marginBottom: 20 }}>Leave a Review</h3>
               <form onSubmit={submitFeedback}>
                 <div style={{ marginBottom: 14 }}><label style={S.labelLight}>Your Name</label><input style={S.inputLight} placeholder="Priya Sharma" value={feedbackForm.patientName} onChange={e => setFeedbackForm({ ...feedbackForm, patientName: e.target.value })} required /></div>
                 <div style={{ marginBottom: 16 }}>
                   <label style={S.labelLight}>Rating</label>
                   <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
-                    {[1,2,3,4,5].map(r => (
-                      <button type="button" key={r} onClick={() => setFeedbackForm({ ...feedbackForm, rating: r })} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 28, color: r <= feedbackForm.rating ? '#EAB308' : '#d1d5db', transition: 'color 0.1s' }}>★</button>
+                    {[1, 2, 3, 4, 5].map(r => (
+                      <button type="button" key={r} onClick={() => setFeedbackForm({ ...feedbackForm, rating: r })} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: isSmall ? 26 : 28, color: r <= feedbackForm.rating ? '#EAB308' : '#d1d5db', transition: 'color 0.1s' }}>★</button>
                     ))}
                     <span style={{ alignSelf: 'center', fontWeight: 600, color: C.green, fontSize: 15, marginLeft: 4 }}>{feedbackForm.rating}/5</span>
                   </div>
@@ -525,24 +567,24 @@ function PublicSite({ onNavigate }) {
                   </select>
                 </div>
                 <div style={{ marginBottom: 20 }}><label style={S.labelLight}>Your Feedback</label><textarea rows={4} style={{ ...S.inputLight, resize: 'none' }} placeholder="Tell us about your experience..." value={feedbackForm.message} onChange={e => setFeedbackForm({ ...feedbackForm, message: e.target.value })} required /></div>
-                <button type="submit" style={{ ...S.btnGold, width: '100%', padding: 14 }}>Submit Feedback →</button>
+                <button type="submit" style={{ ...S.btnGold, width: '100%', padding: isSmall ? 12 : 14 }}>Submit Feedback →</button>
               </form>
             </div>
-            <h3 style={{ ...S.sectionHLight, marginTop: 32, fontSize: 20 }}>What Patients Say</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 14 }}>
+            <h3 style={{ ...S.sectionHLight, marginTop: 32, fontSize: isSmall ? 18 : 20 }}>What Patients Say</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit,minmax(260px,1fr))', gap: 14 }}>
               {[
-                ['PS','Priya Sharma',5,'Treatment Outcome','After years of migraines, Dr. Khimani\'s treatment gave me my life back in 4 months.'],
-                ['RP','Rajesh Patel',5,'Doctor\'s Care','My son\'s asthma improved dramatically. We\'ve reduced inhaler use by 90%.'],
-                ['AV','Ananya Verma',5,'Treatment Outcome','PCOS balanced naturally without harsh side effects. Truly remarkable results.'],
-              ].map(([init,name,r,cat,msg]) => (
-                <div key={name} style={{ ...S.card, background: C.cream }}>
+                ['PS', 'Priya Sharma', 5, 'Treatment Outcome', 'After years of migraines, Dr. Khimani\'s treatment gave me my life back in 4 months.'],
+                ['RP', 'Rajesh Patel', 5, 'Doctor\'s Care', 'My son\'s asthma improved dramatically. We\'ve reduced inhaler use by 90%.'],
+                ['AV', 'Ananya Verma', 5, 'Treatment Outcome', 'PCOS balanced naturally without harsh side effects. Truly remarkable results.'],
+              ].map(([init, name, r, cat, msg]) => (
+                <div key={name} style={{ ...S.card, background: C.cream, padding: isSmall ? '16px 14px' : 24 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
                     <StarRating value={r} />
                     <span style={{ ...S.tag, fontSize: 11 }}>{cat}</span>
                   </div>
                   <p style={{ color: '#4b5563', fontSize: 13, fontStyle: 'italic', lineHeight: 1.65, marginBottom: 14 }}>"{msg}"</p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: C.green, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600 }}>{init}</div>
+                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: C.green, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: 12 }}>{init}</div>
                     <div style={{ fontWeight: 600, color: C.green, fontSize: 13 }}>{name}</div>
                   </div>
                 </div>
@@ -556,8 +598,8 @@ function PublicSite({ onNavigate }) {
       </div>
 
       {/* Footer */}
-      <footer style={{ background: '#0a1f16', padding: '28px 20px', borderTop: '1px solid rgba(255,255,255,0.05)', marginTop: 40 }}>
-        <div style={{ ...S.container, display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: 18, alignItems: 'start' }}>
+      <footer style={{ background: '#0a1f16', padding: isSmall ? '24px 14px' : '28px 20px', borderTop: '1px solid rgba(255,255,255,0.05)', marginTop: 40 }}>
+        <div style={{ ...S.container, display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.2fr 1fr 1fr', gap: isMobile ? 28 : 18, alignItems: 'start' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
               <div style={{ width: 120, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', overflow: 'hidden', flexShrink: 0 }}><img src="/logo-full.png" alt="Dr. Isha's Homeopathic Clinic" style={{ height: '100%', width: 'auto', maxWidth: '100%', objectFit: 'contain' }} /></div>
@@ -585,7 +627,7 @@ function PublicSite({ onNavigate }) {
           <div>
             <div style={{ color: '#fff', fontWeight: 700, fontSize: 13, marginBottom: 10, letterSpacing: 0.3 }}>Quick Links</div>
             <div style={{ display: 'grid', gap: 10 }}>
-              {['Privacy','Terms','Sitemap'].map(l => (
+              {['Privacy', 'Terms', 'Sitemap'].map(l => (
                 <a key={l} href="#" style={{ color: '#f5f5f5', fontSize: 12, textDecoration: 'none' }}>
                   {l}
                 </a>
@@ -619,6 +661,10 @@ function PublicSite({ onNavigate }) {
    LOGIN PANEL
 ───────────────────────────────────────────── */
 function LoginPanel({ onNavigate }) {
+  const winWidth = useWindowWidth();
+  const isMobile = winWidth <= 768;
+  const isSmall = winWidth <= 480;
+
   const { login, register } = useAuth();
   const [mode, setMode] = useState('login'); // 'login' | 'register' | 'forgot' | 'verify_code' | 'new_password'
   const [form, setForm] = useState({ name: '', email: '', password: '', phone: '', role: 'patient' });
@@ -733,16 +779,16 @@ function LoginPanel({ onNavigate }) {
   };
 
   return (
-    <div style={{ maxWidth: 440, margin: '0 auto' }}>
-      <div style={{ textAlign: 'center', marginBottom: 28 }}>
-        <div style={{ fontSize: 48, marginBottom: 8 }}>🔑</div>
-        <h2 style={{ ...S.sectionHLight, marginBottom: 4 }}>{getTitle()}</h2>
-        <p style={{ color: '#6b7280', fontSize: 14 }}>{getSubtitle()}</p>
+    <div style={{ maxWidth: 440, margin: '0 auto', width: '100%', padding: isSmall ? '0 4px' : 0, boxSizing: 'border-box' }}>
+      <div style={{ textAlign: 'center', marginBottom: isSmall ? 20 : 28 }}>
+        <div style={{ fontSize: isSmall ? 40 : 48, marginBottom: 8 }}>🔑</div>
+        <h2 style={{ ...S.sectionHLight, marginBottom: 4, fontSize: isSmall ? 22 : 26 }}>{getTitle()}</h2>
+        <p style={{ color: '#6b7280', fontSize: isSmall ? 13 : 14 }}>{getSubtitle()}</p>
       </div>
-      <div style={{ background: `linear-gradient(135deg,${C.green},${C.greenDark})`, borderRadius: 24, padding: 32 }}>
+      <div style={{ background: `linear-gradient(135deg,${C.green},${C.greenDark})`, borderRadius: isSmall ? 18 : 24, padding: isSmall ? '20px 14px' : (isMobile ? '24px 18px' : 32) }}>
         {(mode === 'login' || mode === 'register') && (
           <div style={{ display: 'flex', gap: 4, marginBottom: 24, background: 'rgba(0,0,0,0.2)', borderRadius: 10, padding: 4 }}>
-            {[['login','Login'],['register','Register']].map(([v,l]) => (
+            {[['login', 'Login'], ['register', 'Register']].map(([v, l]) => (
               <button key={v} onClick={() => { setMode(v); setAlertState({ msg: '', type: 'success' }); }} style={{ flex: 1, background: mode === v ? 'rgba(255,255,255,0.1)' : 'transparent', color: mode === v ? '#fff' : 'rgba(255,255,255,0.5)', border: 'none', borderRadius: 8, padding: '8px 0', cursor: 'pointer', fontSize: 14, fontWeight: mode === v ? 600 : 400 }}>{l}</button>
             ))}
           </div>
@@ -921,9 +967,121 @@ function LoginPanel({ onNavigate }) {
 }
 
 /* ─────────────────────────────────────────────
+   PATIENT: READ-ONLY CONSULTATION NOTES MODAL
+───────────────────────────────────────────── */
+function PatientNotesModal({ booking, onClose }) {
+  const winWidth = useWindowWidth();
+  const isMobile = winWidth <= 768;
+  const isSmall = winWidth <= 480;
+
+  if (!booking) return null;
+  const parsed = parseRawNotes(booking.notes);
+  const formattedDate = booking.date
+    ? (Number.isNaN(new Date(booking.date).getTime()) ? booking.date : new Date(booking.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }))
+    : '—';
+  const doctorName = booking.doctorName || 'Dr. Isha Khimani';
+  const consultType = booking.type === 'online'
+    ? 'Online Consultation'
+    : booking.type === 'follow-up'
+      ? 'Follow-up Consultation'
+      : 'In-Clinic Appointment';
+
+  return (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      background: 'rgba(13, 43, 30, 0.75)', backdropFilter: 'blur(6px)',
+      zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: isSmall ? '8px 6px' : (isMobile ? '12px 8px' : '20px 16px'), boxSizing: 'border-box'
+    }}>
+      <div style={{
+        width: isMobile ? '96vw' : 'min(840px, 94vw)', maxHeight: isMobile ? '94vh' : 'min(840px, 88vh)',
+        background: '#F8F5F0', borderRadius: isSmall ? 16 : 24,
+        border: '1px solid rgba(201, 168, 76, 0.4)',
+        boxShadow: '0 24px 48px rgba(0,0,0,0.4)',
+        display: 'flex', flexDirection: 'column', overflow: 'hidden'
+      }}>
+        {/* Header */}
+        <div style={{
+          background: `linear-gradient(135deg, ${C.greenDark}, ${C.green})`,
+          padding: isSmall ? '12px 14px' : (isMobile ? '14px 16px' : '20px 24px'), color: '#fff', display: 'flex',
+          justifyContent: 'space-between', alignItems: 'flex-start',
+          borderBottom: '1px solid rgba(201, 168, 76, 0.25)'
+        }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+              <span style={{ fontSize: isSmall ? 18 : 22 }}>📋</span>
+              <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: isSmall ? 16 : (isMobile ? 18 : 22), fontWeight: 700, margin: 0, color: '#fff' }}>
+                Doctor's Consultation Notes
+              </h2>
+            </div>
+            <div style={{ display: 'flex', gap: isSmall ? 8 : (isMobile ? 10 : 18), flexWrap: 'wrap', fontSize: isSmall ? 11.5 : (isMobile ? 12 : 13), color: 'rgba(255,255,255,0.9)', marginTop: 8 }}>
+              <div><strong>Doctor:</strong> <span style={{ color: C.gold, fontWeight: 600 }}>{doctorName}</span></div>
+              <div><strong>Type:</strong> {consultType}</div>
+              <div><strong>Date:</strong> {formattedDate} {booking.timeSlot ? `· ${booking.timeSlot}` : ''}</div>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            style={{ background: 'rgba(255,255,255,0.12)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '50%', width: 32, height: 32, cursor: 'pointer', fontSize: 15, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+            title="Close notes workspace"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Scrollable Sheet Body */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: isSmall ? '12px 8px' : (isMobile ? '16px 14px' : '24px 28px'), background: '#F8F5F0' }}>
+          <div style={{ background: '#ffffff', borderRadius: 16, padding: isSmall ? '12px 10px' : (isMobile ? '16px' : '24px'), border: '1px solid rgba(27,67,50,0.1)', boxShadow: '0 4px 16px rgba(0,0,0,0.03)' }}>
+            {/* Patient Concern Header */}
+            {booking.concern && (
+              <div style={{ background: 'rgba(82,183,136,0.08)', border: '1px solid rgba(82,183,136,0.22)', borderRadius: 12, padding: isSmall ? '10px 12px' : '12px 16px', marginBottom: isSmall ? 16 : 24 }}>
+                <div style={{ fontSize: 10.5, textTransform: 'uppercase', letterSpacing: 1, color: C.green, fontWeight: 700, marginBottom: 2 }}>Initial Patient Concern</div>
+                <div style={{ fontSize: isSmall ? 12.5 : 13.5, color: '#374151', fontStyle: 'italic' }}>"{booking.concern}"</div>
+              </div>
+            )}
+
+            {/* 7 Clinical Sections */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: isSmall ? 14 : 20 }}>
+              {CLINICAL_NOTE_SECTIONS.map(({ key, title }) => {
+                const val = (parsed[key] || '').trim();
+                return (
+                  <div key={key} style={{ background: '#FAF8F5', border: '1px solid rgba(27,67,50,0.12)', borderRadius: 12, padding: isSmall ? '12px 12px' : '16px 18px' }}>
+                    <div style={{ fontFamily: 'Playfair Display, serif', fontWeight: 600, color: C.green, fontSize: isSmall ? 13.5 : 15, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span>{title}</span>
+                    </div>
+                    <div style={{ width: '100%', height: 1, background: 'rgba(27,67,50,0.08)', marginBottom: 8 }} />
+                    <div style={{ color: val ? '#1a1a1a' : '#9ca3af', fontSize: isSmall ? 12.5 : 13.5, lineHeight: 1.6, whiteSpace: 'pre-wrap', fontStyle: val ? 'normal' : 'italic' }}>
+                      {val || 'Not specified by doctor.'}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div style={{ padding: isSmall ? '12px 14px' : (isMobile ? '14px 16px' : '16px 24px'), background: '#fff', borderTop: '1px solid rgba(27,67,50,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+          <div style={{ fontSize: isSmall ? 11 : 12, color: C.sage, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}>
+            🔒 Verified Doctor's Notes
+          </div>
+          <button onClick={onClose} style={{ ...S.btnOutline, padding: isSmall ? '7px 16px' : '9px 22px', fontSize: 13 }}>
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
    PATIENT PORTAL
 ───────────────────────────────────────────── */
 function PatientPortal() {
+  const winWidth = useWindowWidth();
+  const isMobile = winWidth <= 768;
+  const isSmall = winWidth <= 480;
+
   const { user, logout } = useAuth();
 
   // Guard clause: this component must never render content for a doctor
@@ -942,21 +1100,19 @@ function PatientPortal() {
   const [myBookings, setMyBookings] = useState([]);
   const [bookingsLoading, setBookingsLoading] = useState(true);
   const [bookingsError, setBookingsError] = useState('');
+  const [selectedNotesBooking, setSelectedNotesBooking] = useState(null);
 
   const loadMyBookings = async () => {
     if (!user?.id) return;
     setBookingsLoading(true);
     setBookingsError('');
     try {
-      const [apptRes, consultRes] = await Promise.all([
-        getAppointments({ patientId: user.id }),
-        getConsultations({ patientId: user.id }),
-      ]);
-      const merged = [
-        ...(apptRes.appointments || []).map((a) => normalizeBooking(a, 'appointment')),
-        ...(consultRes.consultations || []).map((c) => normalizeBooking(c, 'consultation')),
-      ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      setMyBookings(merged);
+      const [appts, consults] = await Promise.all([getAppointments({ patientId: user.id }), getConsultations({ patientId: user.id })]);
+      const combined = [
+        ...(appts.appointments || []).map(a => ({ ...a, kind: 'appointment' })),
+        ...(consults.consultations || []).map(c => ({ ...c, kind: 'consultation', type: 'online' })),
+      ].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+      setMyBookings(combined);
     } catch (err) {
       setBookingsError(err.message);
     } finally {
@@ -964,19 +1120,17 @@ function PatientPortal() {
     }
   };
 
-  useEffect(() => { loadMyBookings(); }, [user?.id]);
-
-  const [myDietPlans, setMyDietPlans] = useState([]);
+  const [activeDietPlan, setActiveDietPlan] = useState(null);
   const [dietLoading, setDietLoading] = useState(true);
   const [dietError, setDietError] = useState('');
 
-  const loadMyDietPlans = async () => {
+  const loadMyDietPlan = async () => {
     if (!user?.id) return;
     setDietLoading(true);
     setDietError('');
     try {
       const { plans } = await getDietPlans();
-      setMyDietPlans(plans || []);
+      setActiveDietPlan(plans?.find(p => p.status !== 'inactive') || plans?.[0]);
     } catch (err) {
       setDietError(err.message);
     } finally {
@@ -984,27 +1138,39 @@ function PatientPortal() {
     }
   };
 
-  useEffect(() => { loadMyDietPlans(); }, [user?.id]);
-  const activeDietPlan = myDietPlans.find((p) => p.status !== 'inactive') || myDietPlans[0] || null;
+  useEffect(() => {
+    loadMyBookings();
+    loadMyDietPlan();
+  }, [user]);
 
   const submitBooking = async (e) => {
     e.preventDefault();
     setBookSubmitting(true);
     setAlert({ msg: '', type: 'success' });
-    const [firstName, ...rest] = (user?.name || '').split(' ');
     try {
-      const { message } = await createAppointment({
-        firstName: firstName || 'Patient',
-        lastName: rest.join(' ') || '-',
-        phone: bookForm.phone,
-        email: bookForm.email,
-        date: bookForm.date,
-        timeSlot: bookForm.timeSlot,
-        type: bookForm.type,
-        concern: bookForm.concern,
-        patientId: user?.id,
-      });
-      setAlert({ msg: message, type: 'success' });
+      if (bookForm.type === 'online') {
+        await createConsultation({
+          patientName: user?.name,
+          email: bookForm.email || user?.email,
+          phone: bookForm.phone || user?.phone,
+          date: bookForm.date,
+          timeSlot: bookForm.timeSlot,
+          concern: bookForm.concern,
+        });
+      } else {
+        const [firstName, ...rest] = (user?.name || '').split(' ');
+        await createAppointment({
+          firstName: firstName || 'Patient',
+          lastName: rest.join(' ') || '',
+          email: bookForm.email || user?.email,
+          phone: bookForm.phone || user?.phone,
+          date: bookForm.date,
+          timeSlot: bookForm.timeSlot,
+          type: bookForm.type,
+          concern: bookForm.concern,
+        });
+      }
+      setAlert({ msg: 'Appointment requested successfully! We will confirm your slot shortly.', type: 'success' });
       setBookForm({ type: 'online', phone: user?.phone || '', email: user?.email || '', date: '', timeSlot: '10:00 AM', concern: '' });
       loadMyBookings();
       setTimeout(() => { setTab('appointments'); setAlert({ msg: '', type: 'success' }); }, 1200);
@@ -1026,57 +1192,123 @@ function PatientPortal() {
   };
 
   const sidebarTabs = [
-    ['dashboard','🏠 Dashboard'],['appointments','📅 My Appointments'],['online','💻 Online Consult'],
-    ['diet','🥗 Diet Plan'],['records','📋 My Records'],['feedback','⭐ Feedback'],
+    ['dashboard', '🏠 Dashboard'], ['appointments', '📅 My Appointments'], ['online', '💻 Online Consult'],
+    ['diet', '🥗 Diet Plan'], ['records', '📋 My Records'], ['feedback', '⭐ Feedback'],
   ];
 
   return (
-    <div style={{ ...S.page, display: 'flex', minHeight: '100vh' }}>
+    <div style={{ ...S.page, display: 'flex', flexDirection: isMobile ? 'column' : 'row', minHeight: '100vh' }}>
       {/* Sidebar */}
-      <aside style={{ width: 230, background: `linear-gradient(180deg,${C.greenDark},${C.green})`, padding: '24px 0', display: 'flex', flexDirection: 'column', flexShrink: 0, minHeight: '100vh' }}>
-        <div style={{ padding: '0 20px 24px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}><div style={{ width: 130, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', overflow: 'hidden', flexShrink: 0 }}><img src="/logo-full.png" alt="Dr. Isha's Homeopathic Clinic" style={{ height: '100%', width: 'auto', maxWidth: '100%', objectFit: 'contain' }} /></div></div>
-          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', letterSpacing: 2, textTransform: 'uppercase' }}>PATIENT PORTAL</div>
+      <aside style={{
+        width: isMobile ? '100%' : 230,
+        background: `linear-gradient(180deg,${C.greenDark},${C.green})`,
+        padding: isMobile ? (isSmall ? '10px 10px' : '12px 14px') : '24px 0',
+        display: 'flex',
+        flexDirection: 'column',
+        flexShrink: 0,
+        minHeight: isMobile ? 'auto' : '100vh',
+        boxSizing: 'border-box'
+      }}>
+        <div style={{
+          padding: isMobile ? '0 0 10px' : '0 20px 24px',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
+              <div style={{ width: isSmall ? 110 : 130, height: isSmall ? 30 : 34, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', overflow: 'hidden', flexShrink: 0 }}>
+                <img src="/logo-full.png" alt="Dr. Isha's Homeopathic Clinic" style={{ height: '100%', width: 'auto', maxWidth: '100%', objectFit: 'contain' }} />
+              </div>
+            </div>
+            <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.35)', letterSpacing: 2, textTransform: 'uppercase' }}>PATIENT PORTAL</div>
+          </div>
+          {isMobile && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: isSmall ? 6 : 10 }}>
+              <div style={{ width: 30, height: 30, borderRadius: '50%', background: 'rgba(82,183,136,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.sage, fontWeight: 700, fontSize: 12 }}>
+                {user?.name?.[0]}
+              </div>
+              <button onClick={logout} style={{ ...S.btnOutline, color: 'rgba(255,255,255,0.85)', borderColor: 'rgba(255,255,255,0.25)', fontSize: 11, padding: isSmall ? '4px 8px' : '5px 10px' }}>
+                Logout
+              </button>
+            </div>
+          )}
         </div>
-        <div style={{ flex: 1, padding: '16px 12px' }}>
+        <div
+          className="hd-scroll-x"
+          style={{
+            flex: 1,
+            padding: isMobile ? '8px 0 0' : '16px 12px',
+            display: 'flex',
+            flexDirection: isMobile ? 'row' : 'column',
+            overflowX: isMobile ? 'auto' : 'visible',
+            gap: isSmall ? 4 : (isMobile ? 6 : 2),
+            WebkitOverflowScrolling: 'touch'
+          }}
+        >
           {sidebarTabs.map(([id, label]) => (
-            <button key={id} onClick={() => setTab(id)} style={{ width: '100%', textAlign: 'left', background: tab === id ? 'rgba(255,255,255,0.12)' : 'transparent', color: tab === id ? '#fff' : 'rgba(255,255,255,0.55)', border: 'none', borderLeft: tab === id ? `3px solid ${C.gold}` : '3px solid transparent', borderRadius: 10, padding: '11px 14px', cursor: 'pointer', fontSize: 13, fontWeight: tab === id ? 600 : 400, marginBottom: 2 }}>{label}</button>
+            <button
+              key={id}
+              onClick={() => setTab(id)}
+              style={{
+                width: isMobile ? 'auto' : '100%',
+                textAlign: isMobile ? 'center' : 'left',
+                background: tab === id ? 'rgba(255,255,255,0.12)' : 'transparent',
+                color: tab === id ? '#fff' : 'rgba(255,255,255,0.55)',
+                border: 'none',
+                borderLeft: !isMobile && tab === id ? `3px solid ${C.gold}` : 'none',
+                borderBottom: isMobile && tab === id ? `3px solid ${C.gold}` : 'none',
+                borderRadius: isMobile ? 8 : 10,
+                padding: isSmall ? '7px 10px' : (isMobile ? '8px 12px' : '11px 14px'),
+                cursor: 'pointer',
+                fontSize: isSmall ? 11.5 : (isMobile ? 12 : 13),
+                fontWeight: tab === id ? 600 : 400,
+                marginBottom: isMobile ? 0 : 2,
+                whiteSpace: 'nowrap',
+                flexShrink: 0
+              }}
+            >
+              {label}
+            </button>
           ))}
         </div>
-        <div style={{ padding: '16px 12px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-            <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(82,183,136,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.sage, fontWeight: 700, fontSize: 14 }}>{user?.name?.[0]}</div>
-            <div><div style={{ color: '#fff', fontSize: 13, fontWeight: 600 }}>{user?.name}</div><div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>Patient</div></div>
+        {!isMobile && (
+          <div style={{ padding: '16px 12px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+              <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(82,183,136,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.sage, fontWeight: 700, fontSize: 14 }}>{user?.name?.[0]}</div>
+              <div><div style={{ color: '#fff', fontSize: 13, fontWeight: 600 }}>{user?.name}</div><div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>Patient</div></div>
+            </div>
+            <button onClick={logout} style={{ ...S.btnOutline, width: '100%', color: 'rgba(255,255,255,0.6)', borderColor: 'rgba(255,255,255,0.2)', fontSize: 12 }}>Logout</button>
           </div>
-          <button onClick={logout} style={{ ...S.btnOutline, width: '100%', color: 'rgba(255,255,255,0.6)', borderColor: 'rgba(255,255,255,0.2)', fontSize: 12 }}>Logout</button>
-        </div>
+        )}
       </aside>
 
       {/* Main */}
-      <main style={{ flex: 1, background: C.cream, padding: 32, overflowY: 'auto' }}>
+      <main style={{ flex: 1, background: C.cream, padding: isSmall ? '16px 12px' : (isMobile ? '20px 14px' : 32), overflowY: 'auto', width: '100%', boxSizing: 'border-box' }}>
         <Alert msg={alert.msg} type={alert.type} />
 
         {/* DASHBOARD */}
         {tab === 'dashboard' && (
           <div>
-            <h2 style={{ ...S.sectionHLight, marginBottom: 4 }}>Welcome back, {user?.name?.split(' ')[0]}! 👋</h2>
-            <p style={{ color: '#6b7280', marginBottom: 28 }}>Your health journey at a glance.</p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: 16, marginBottom: 28 }}>
+            <h2 style={{ ...S.sectionHLight, marginBottom: 4, fontSize: isSmall ? 18 : (isMobile ? 20 : 22) }}>Welcome back, {user?.name?.split(' ')[0]}! 👋</h2>
+            <p style={{ color: '#6b7280', marginBottom: 28, fontSize: isSmall ? 13 : 14 }}>Your health journey at a glance.</p>
+            <div style={{ display: 'grid', gridTemplateColumns: isSmall ? '1fr 1fr' : (isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit,minmax(180px,1fr))'), gap: isSmall ? 10 : (isMobile ? 12 : 16), marginBottom: 28 }}>
               {[
                 ['📅', myBookings.length, 'Total Appointments', C.green],
                 ['✅', myBookings.filter(a => a.status === 'completed').length, 'Completed', C.sage],
                 ['⏳', myBookings.filter(a => a.status !== 'completed' && a.status !== 'cancelled').length, 'Upcoming', '#d97706'],
                 ['🥗', activeDietPlan ? '1' : '0', 'Active Diet Plan', C.gold],
-              ].map(([ic,n,l,c]) => (
-                <div key={l} style={{ ...S.card, borderTop: `4px solid ${c}` }}>
+              ].map(([ic, n, l, c]) => (
+                <div key={l} style={{ ...S.card, borderTop: `4px solid ${c}`, padding: isSmall ? '14px 12px' : 24 }}>
                   <div style={{ fontSize: 24, marginBottom: 8 }}>{ic}</div>
-                  <div style={{ fontFamily: 'Playfair Display,serif', fontSize: 28, fontWeight: 700, color: c }}>{n}</div>
-                  <div style={{ color: '#6b7280', fontSize: 13 }}>{l}</div>
+                  <div style={{ fontFamily: 'Playfair Display,serif', fontSize: isSmall ? 22 : 28, fontWeight: 700, color: c }}>{n}</div>
+                  <div style={{ color: '#6b7280', fontSize: isSmall ? 11.5 : 13 }}>{l}</div>
                 </div>
               ))}
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-              <div style={S.card}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 20 }}>
+              <div style={{ ...S.card, padding: isSmall ? '16px 14px' : 24 }}>
                 <h3 style={{ fontFamily: 'Playfair Display,serif', color: C.green, fontSize: 17, marginBottom: 16 }}>Upcoming Appointments</h3>
                 {bookingsLoading && <p style={{ color: '#6b7280', fontSize: 13 }}>Loading…</p>}
                 {!bookingsLoading && myBookings.filter(a => a.status !== 'completed' && a.status !== 'cancelled').length === 0 && (
@@ -1092,7 +1324,7 @@ function PatientPortal() {
                   </div>
                 ))}
               </div>
-              <div style={S.card}>
+              <div style={{ ...S.card, padding: isSmall ? '16px 14px' : 24 }}>
                 <h3 style={{ fontFamily: 'Playfair Display,serif', color: C.green, fontSize: 17, marginBottom: 14 }}>Current Diet Plan</h3>
                 {dietLoading && <p style={{ color: '#6b7280', fontSize: 13 }}>Loading…</p>}
                 {!dietLoading && !activeDietPlan && (
@@ -1118,42 +1350,94 @@ function PatientPortal() {
         {/* APPOINTMENTS */}
         {tab === 'appointments' && (
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-              <h2 style={S.sectionHLight}>My Appointments</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
+              <h2 style={{ ...S.sectionHLight, margin: 0, fontSize: isSmall ? 18 : (isMobile ? 20 : 22) }}>My Appointments</h2>
               <button onClick={() => setTab('online')} style={S.btnGold}>+ Book New</button>
             </div>
             {bookingsError && <Alert msg={bookingsError} type="error" />}
             {bookingsLoading && <p style={{ color: '#6b7280' }}>Loading your appointments…</p>}
-            {!bookingsLoading && myBookings.length === 0 && <p style={{ color: '#6b7280' }}>You haven't booked any appointments yet.</p>}
-            {myBookings.map(a => (
-              <div key={a.id} style={S.card}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-                      <span style={{ fontSize: 18 }}>{a.type === 'online' ? '💻' : a.type === 'follow-up' ? '🔄' : '🏥'}</span>
-                      <span style={{ fontFamily: 'Playfair Display,serif', fontWeight: 600, color: C.green, fontSize: 17, textTransform: 'capitalize' }}>{a.type.replace('-', ' ')}</span>
-                      <StatusBadge status={a.status} />
+            {myBookings.map(a => {
+              const hasNotes = Boolean(a.notes && String(a.notes).trim());
+              const formattedDate = a.date
+                ? (Number.isNaN(new Date(a.date).getTime()) ? a.date : new Date(a.date).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' }))
+                : '—';
+              return (
+                <div key={a.id} style={{ ...S.card, padding: isSmall ? '16px 14px' : 24 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
+                    <div style={{ flex: 1, minWidth: isMobile ? '100%' : 260 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6, flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: 18 }}>{a.type === 'online' ? '💻' : a.type === 'follow-up' ? '🔄' : '🏥'}</span>
+                        <span style={{ fontFamily: 'Playfair Display,serif', fontWeight: 600, color: C.green, fontSize: 17, textTransform: 'capitalize' }}>{a.type.replace('-', ' ')}</span>
+                        <StatusBadge status={a.status} />
+                        {hasNotes ? (
+                          <span style={{ background: 'rgba(27,67,50,0.08)', color: C.green, border: '1px solid rgba(27,67,50,0.18)', borderRadius: 6, padding: '2px 8px', fontSize: 11, fontWeight: 600 }}>
+                            ✓ Notes available
+                          </span>
+                        ) : (
+                          <span style={{ background: '#f9fafb', color: '#9ca3af', border: '1px solid #e5e7eb', borderRadius: 6, padding: '2px 8px', fontSize: 11, fontStyle: 'italic' }}>
+                            Notes pending
+                          </span>
+                        )}
+                      </div>
+                      <div style={{ color: '#374151', fontSize: 14, marginBottom: 4 }}>📅 {formattedDate} · {a.timeSlot}</div>
+                      <div style={{ color: '#6b7280', fontSize: 13, marginBottom: 6 }}>Doctor: {a.doctorName || 'Dr. Isha Khimani'} · Concern: {a.concern}</div>
+
+                      {/* Doctor Notes Action / Status Section */}
+                      <div style={{ marginTop: 10, background: hasNotes ? 'rgba(27,67,50,0.04)' : '#fafafa', borderRadius: 10, padding: isSmall ? '10px 10px' : '10px 14px', border: `1px solid ${hasNotes ? 'rgba(27,67,50,0.12)' : '#f3f4f6'}` }}>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: hasNotes ? C.green : '#9ca3af', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <span>📋 Doctor's Consultation Notes</span>
+                        </div>
+                        {hasNotes ? (
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginTop: 4 }}>
+                            <span style={{ fontSize: 12, color: '#374151', fontWeight: 500 }}>
+                              Consultation notes available
+                            </span>
+                            <button
+                              onClick={() => setSelectedNotesBooking(a)}
+                              style={{
+                                ...S.btnGold,
+                                fontSize: isSmall ? 11.5 : 12,
+                                padding: isSmall ? '6px 10px' : '6px 14px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 6,
+                                cursor: 'pointer'
+                              }}
+                            >
+                              View Notes →
+                            </button>
+                          </div>
+                        ) : (
+                          <div style={{ fontSize: 12, color: '#9ca3af', fontStyle: 'italic' }}>
+                            Consultation notes have not been added yet.
+                          </div>
+                        )}
+                      </div>
+
+                      {a.meetingLink && a.status === 'confirmed' && (
+                        <div style={{ marginTop: 10 }}>
+                          <a href={a.meetingLink} target="_blank" rel="noreferrer" style={{ color: '#fff', background: C.greenMid, borderRadius: 8, padding: '6px 14px', fontSize: 12, fontWeight: 600, display: 'inline-block' }}>
+                            🔗 Join Video Call
+                          </a>
+                        </div>
+                      )}
                     </div>
-                    <div style={{ color: '#374151', fontSize: 14, marginBottom: 4 }}>📅 {new Date(a.date).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })} · {a.timeSlot}</div>
-                    <div style={{ color: '#6b7280', fontSize: 13 }}>Concern: {a.concern}</div>
-                    {a.notes && <div style={{ color: C.green, fontSize: 13, marginTop: 6, background: 'rgba(27,67,50,0.06)', borderRadius: 8, padding: '6px 10px' }}>📝 Doctor's notes: {a.notes}</div>}
-                    {a.meetingLink && a.status === 'confirmed' && <div style={{ marginTop: 8 }}><a href={a.meetingLink} target="_blank" rel="noreferrer" style={{ color: '#fff', background: C.greenMid, borderRadius: 8, padding: '6px 14px', fontSize: 12, fontWeight: 600 }}>🔗 Join Video Call</a></div>}
+                    {a.status === 'pending' && <button onClick={() => cancelBooking(a)} style={S.btnDanger}>Cancel</button>}
                   </div>
-                  {a.status === 'pending' && <button onClick={() => cancelBooking(a)} style={S.btnDanger}>Cancel</button>}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
         {/* ONLINE CONSULT */}
         {tab === 'online' && (
           <div style={{ maxWidth: 600 }}>
-            <h2 style={{ ...S.sectionHLight, marginBottom: 4 }}>💻 Book Online Consultation</h2>
-            <p style={{ color: '#6b7280', marginBottom: 24 }}>Consult Dr. Khimani from home. A video link will be sent to your email and WhatsApp.</p>
-            <div style={{ background: `linear-gradient(135deg,${C.green},${C.greenDark})`, borderRadius: 20, padding: 32 }}>
+            <h2 style={{ ...S.sectionHLight, marginBottom: 4, fontSize: isSmall ? 18 : (isMobile ? 20 : 22) }}>💻 Book Online Consultation</h2>
+            <p style={{ color: '#6b7280', marginBottom: 24, fontSize: isSmall ? 13 : 14 }}>Consult Dr. Khimani from home. A video link will be sent to your email and WhatsApp.</p>
+            <div style={{ background: `linear-gradient(135deg,${C.green},${C.greenDark})`, borderRadius: 20, padding: isSmall ? '18px 14px' : (isMobile ? 20 : 32) }}>
               <form onSubmit={submitBooking}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14, marginBottom: 14 }}>
                   <div><label style={S.label}>Consultation Type</label>
                     <select style={{ ...S.input, background: 'rgba(27,67,50,0.9)' }} value={bookForm.type} onChange={e => setBookForm({ ...bookForm, type: e.target.value })}>
                       <option value="online">Online Video</option>
@@ -1163,17 +1447,17 @@ function PatientPortal() {
                   </div>
                   <div><label style={S.label}>Preferred Date</label><input style={S.input} type="date" value={bookForm.date} onChange={e => setBookForm({ ...bookForm, date: e.target.value })} required /></div>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14, marginBottom: 14 }}>
                   <div><label style={S.label}>Phone</label><input style={S.input} placeholder="+91 98765 43210" value={bookForm.phone} onChange={e => setBookForm({ ...bookForm, phone: e.target.value })} required /></div>
                   <div><label style={S.label}>Time Slot</label>
                     <select style={{ ...S.input, background: 'rgba(27,67,50,0.9)' }} value={bookForm.timeSlot} onChange={e => setBookForm({ ...bookForm, timeSlot: e.target.value })}>
-                      {['9:00 AM','10:00 AM','11:00 AM','4:00 PM','5:00 PM','6:00 PM'].map(t => <option key={t}>{t}</option>)}
+                      {['9:00 AM', '10:00 AM', '11:00 AM', '4:00 PM', '5:00 PM', '6:00 PM'].map(t => <option key={t}>{t}</option>)}
                     </select>
                   </div>
                 </div>
                 <div style={{ marginBottom: 14 }}><label style={S.label}>Email</label><input style={S.input} type="email" placeholder="you@email.com" value={bookForm.email} onChange={e => setBookForm({ ...bookForm, email: e.target.value })} /></div>
                 <div style={{ marginBottom: 20 }}><label style={S.label}>Health Concern</label><textarea rows={4} style={{ ...S.input, resize: 'none' }} placeholder="Describe your symptoms or reason for consultation..." value={bookForm.concern} onChange={e => setBookForm({ ...bookForm, concern: e.target.value })} required /></div>
-                <button type="submit" disabled={bookSubmitting} style={{ ...S.btnGold, width: '100%', padding: 14, opacity: bookSubmitting ? 0.7 : 1, cursor: bookSubmitting ? 'not-allowed' : 'pointer' }}>{bookSubmitting ? 'Submitting…' : 'Confirm Booking →'}</button>
+                <button type="submit" disabled={bookSubmitting} style={{ ...S.btnGold, width: '100%', padding: isSmall ? 12 : 14, opacity: bookSubmitting ? 0.7 : 1, cursor: bookSubmitting ? 'not-allowed' : 'pointer' }}>{bookSubmitting ? 'Submitting…' : 'Confirm Booking →'}</button>
               </form>
             </div>
           </div>
@@ -1182,22 +1466,22 @@ function PatientPortal() {
         {/* DIET PLAN */}
         {tab === 'diet' && (
           <div>
-            <h2 style={{ ...S.sectionHLight, marginBottom: 4 }}>🥗 Your Diet Plan</h2>
-            <p style={{ color: '#6b7280', marginBottom: 24 }}>Prescribed by your doctor · Tailored for your constitution</p>
+            <h2 style={{ ...S.sectionHLight, marginBottom: 4, fontSize: isSmall ? 18 : (isMobile ? 20 : 22) }}>🥗 Your Diet Plan</h2>
+            <p style={{ color: '#6b7280', marginBottom: 24, fontSize: isSmall ? 13 : 14 }}>Prescribed by your doctor · Tailored for your constitution</p>
             {dietError && <Alert msg={dietError} type="error" />}
             {dietLoading && <p style={{ color: '#6b7280' }}>Loading your diet plan…</p>}
             {!dietLoading && !activeDietPlan && (
               <p style={{ color: '#6b7280' }}>No diet plan has been assigned to you yet. Your doctor will add one after reviewing your case.</p>
             )}
             {activeDietPlan && (
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 20 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap: 20 }}>
                 <div>
-                  <div style={S.card}>
+                  <div style={{ ...S.card, padding: isSmall ? '16px 14px' : 24 }}>
                     <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 14, flexWrap: 'wrap' }}>
-                      <span style={{ fontFamily: 'Playfair Display,serif', color: C.green, fontSize: 20, fontWeight: 700 }}>{activeDietPlan.title}</span>
+                      <span style={{ fontFamily: 'Playfair Display,serif', color: C.green, fontSize: isSmall ? 18 : 20, fontWeight: 700 }}>{activeDietPlan.title}</span>
                       {activeDietPlan.condition && <span style={S.tag}>{activeDietPlan.condition}</span>}
                     </div>
-                    {[['🌅 Breakfast', activeDietPlan.meals?.breakfast || []],['☀️ Lunch', activeDietPlan.meals?.lunch || []],['🌙 Dinner', activeDietPlan.meals?.dinner || []]].map(([meal, items]) => (
+                    {[['🌅 Breakfast', activeDietPlan.meals?.breakfast || []], ['☀️ Lunch', activeDietPlan.meals?.lunch || []], ['🌙 Dinner', activeDietPlan.meals?.dinner || []]].map(([meal, items]) => (
                       <div key={meal} style={{ marginBottom: 16 }}>
                         <div style={{ fontWeight: 600, color: C.green, fontSize: 14, marginBottom: 6 }}>{meal}</div>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
@@ -1221,17 +1505,17 @@ function PatientPortal() {
                   </div>
                 </div>
                 <div>
-                  <div style={S.card}>
+                  <div style={{ ...S.card, padding: isSmall ? '16px 14px' : 24 }}>
                     <h4 style={{ fontFamily: 'Playfair Display,serif', color: C.green, marginBottom: 12 }}>✅ Include</h4>
                     {(activeDietPlan.foodsToInclude || []).length === 0 && <span style={{ fontSize: 13, color: '#9ca3af' }}>Not specified</span>}
                     {(activeDietPlan.foodsToInclude || []).map(f => <div key={f} style={{ display: 'flex', gap: 8, marginBottom: 6 }}><span style={{ color: C.sage }}>•</span><span style={{ fontSize: 13, color: '#374151' }}>{f}</span></div>)}
                   </div>
-                  <div style={{ ...S.card, background: '#fef2f2', border: '1px solid rgba(220,38,38,0.12)' }}>
+                  <div style={{ ...S.card, background: '#fef2f2', border: '1px solid rgba(220,38,38,0.12)', padding: isSmall ? '16px 14px' : 24 }}>
                     <h4 style={{ fontFamily: 'Playfair Display,serif', color: '#dc2626', marginBottom: 12 }}>⛔ Avoid</h4>
                     {(activeDietPlan.foodsToAvoid || []).length === 0 && <span style={{ fontSize: 13, color: '#9ca3af' }}>Not specified</span>}
                     {(activeDietPlan.foodsToAvoid || []).map(f => <div key={f} style={{ display: 'flex', gap: 8, marginBottom: 6 }}><span style={{ color: '#dc2626' }}>•</span><span style={{ fontSize: 13, color: '#374151' }}>{f}</span></div>)}
                   </div>
-                  <div style={{ ...S.card, background: '#fffbeb', border: '1px solid rgba(217,119,6,0.15)' }}>
+                  <div style={{ ...S.card, background: '#fffbeb', border: '1px solid rgba(217,119,6,0.15)', padding: isSmall ? '16px 14px' : 24 }}>
                     <h4 style={{ fontFamily: 'Playfair Display,serif', color: '#92400e', marginBottom: 12 }}>🌿 Lifestyle</h4>
                     {(activeDietPlan.lifestyle || []).length === 0 && <span style={{ fontSize: 13, color: '#9ca3af' }}>Not specified</span>}
                     {(activeDietPlan.lifestyle || []).map(l => <div key={l} style={{ display: 'flex', gap: 8, marginBottom: 6 }}><span style={{ color: C.gold }}>•</span><span style={{ fontSize: 13, color: '#374151' }}>{l}</span></div>)}
@@ -1247,6 +1531,14 @@ function PatientPortal() {
 
         {/* FEEDBACK */}
         {tab === 'feedback' && <PatientFeedback />}
+
+        {/* READ-ONLY CONSULTATION NOTES MODAL FOR PATIENT */}
+        {selectedNotesBooking && (
+          <PatientNotesModal
+            booking={selectedNotesBooking}
+            onClose={() => setSelectedNotesBooking(null)}
+          />
+        )}
       </main>
     </div>
   );
@@ -1264,6 +1556,10 @@ function formatRecordDate(v) {
 }
 
 function PatientRecordsPanel({ user }) {
+  const winWidth = useWindowWidth();
+  const isMobile = winWidth <= 768;
+  const isSmall = winWidth <= 480;
+
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -1287,13 +1583,13 @@ function PatientRecordsPanel({ user }) {
 
   return (
     <div>
-      <h2 style={{ ...S.sectionHLight, marginBottom: 4 }}>📋 My Health Records</h2>
-      <p style={{ color: '#6b7280', marginBottom: 24 }}>Your complete clinical history — visible only to you and your doctor</p>
+      <h2 style={{ ...S.sectionHLight, marginBottom: 4, fontSize: isSmall ? 18 : (isMobile ? 20 : 22) }}>📋 My Health Records</h2>
+      <p style={{ color: '#6b7280', marginBottom: 24, fontSize: isSmall ? 13 : 14 }}>Your complete clinical history — visible only to you and your doctor</p>
 
       {error && <Alert msg={error} type="error" />}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
-        <div style={S.card}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 20, marginBottom: 20 }}>
+        <div style={{ ...S.card, padding: isSmall ? '16px 14px' : 24 }}>
           <h3 style={{ fontFamily: 'Playfair Display,serif', color: C.green, fontSize: 16, marginBottom: 16 }}>Personal Details</h3>
           {[['Name', user?.name], ['Email', user?.email], ['Phone', user?.phone || '—']].map(([k, v]) => (
             <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(27,67,50,0.06)', fontSize: 13 }}>
@@ -1301,7 +1597,7 @@ function PatientRecordsPanel({ user }) {
             </div>
           ))}
         </div>
-        <div style={S.card}>
+        <div style={{ ...S.card, padding: isSmall ? '16px 14px' : 24 }}>
           <h3 style={{ fontFamily: 'Playfair Display,serif', color: C.green, fontSize: 16, marginBottom: 16 }}>Current Care Summary</h3>
           {latest ? (
             [
@@ -1327,7 +1623,7 @@ function PatientRecordsPanel({ user }) {
         <p style={{ color: '#6b7280' }}>No records yet — your doctor will add visit notes here after your consultation.</p>
       )}
       {records.map((r) => (
-        <div key={r.id} style={S.card}>
+        <div key={r.id} style={{ ...S.card, padding: isSmall ? '16px 14px' : 24 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10, flexWrap: 'wrap', gap: 8 }}>
             <span style={{ fontWeight: 600, color: C.green }}>{formatRecordDate(r.visitDate)}</span>
             <span style={S.tag}>{r.remedy}{r.potency ? ` · ${r.potency}` : ''}</span>
@@ -1344,6 +1640,10 @@ function PatientRecordsPanel({ user }) {
 }
 
 function PatientFeedback() {
+  const winWidth = useWindowWidth();
+  const isMobile = winWidth <= 768;
+  const isSmall = winWidth <= 480;
+
   const [form, setForm] = useState({ rating: 5, category: 'treatment', message: '' });
   const [alert, setAlert] = useState({ msg: '', type: 'success' });
   const [submitting, setSubmitting] = useState(false);
@@ -1383,15 +1683,15 @@ function PatientFeedback() {
 
   return (
     <div style={{ maxWidth: 580 }}>
-      <h2 style={{ ...S.sectionHLight, marginBottom: 4 }}>⭐ Submit Feedback</h2>
-      <p style={{ color: '#6b7280', marginBottom: 24 }}>Share your experience with Dr. Khimani</p>
+      <h2 style={{ ...S.sectionHLight, marginBottom: 4, fontSize: isSmall ? 18 : (isMobile ? 20 : 22) }}>⭐ Submit Feedback</h2>
+      <p style={{ color: '#6b7280', marginBottom: 24, fontSize: isSmall ? 13 : 14 }}>Share your experience with Dr. Khimani</p>
       <Alert msg={alert.msg} type={alert.type} />
-      <div style={S.card}>
+      <div style={{ ...S.card, padding: isSmall ? '16px 14px' : 24 }}>
         <form onSubmit={submit}>
           <div style={{ marginBottom: 16 }}>
             <label style={S.labelLight}>Your Rating</label>
             <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
-              {[1,2,3,4,5].map(r => <button type="button" key={r} onClick={() => setForm({ ...form, rating: r })} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 32, color: r <= form.rating ? '#EAB308' : '#d1d5db' }}>★</button>)}
+              {[1, 2, 3, 4, 5].map(r => <button type="button" key={r} onClick={() => setForm({ ...form, rating: r })} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: isSmall ? 26 : 32, color: r <= form.rating ? '#EAB308' : '#d1d5db' }}>★</button>)}
               <span style={{ alignSelf: 'center', fontWeight: 600, color: C.green, fontSize: 14 }}>{form.rating}/5</span>
             </div>
           </div>
@@ -1404,7 +1704,7 @@ function PatientFeedback() {
             </select>
           </div>
           <div style={{ marginBottom: 20 }}><label style={S.labelLight}>Your Feedback</label><textarea rows={5} style={{ ...S.inputLight, resize: 'none' }} placeholder="Share your experience..." value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} required /></div>
-          <button type="submit" disabled={submitting} style={{ ...S.btnGold, width: '100%', padding: 14, opacity: submitting ? 0.7 : 1, cursor: submitting ? 'not-allowed' : 'pointer' }}>{submitting ? 'Submitting…' : 'Submit Feedback →'}</button>
+          <button type="submit" disabled={submitting} style={{ ...S.btnGold, width: '100%', padding: isSmall ? 12 : 14, opacity: submitting ? 0.7 : 1, cursor: submitting ? 'not-allowed' : 'pointer' }}>{submitting ? 'Submitting…' : 'Submit Feedback →'}</button>
         </form>
       </div>
 
@@ -1412,7 +1712,7 @@ function PatientFeedback() {
         <div style={{ marginTop: 28 }}>
           <h3 style={{ fontFamily: 'Playfair Display,serif', color: C.green, fontSize: 16, marginBottom: 12 }}>Your Past Feedback</h3>
           {myFeedback.map(f => (
-            <div key={f.id} style={S.card}>
+            <div key={f.id} style={{ ...S.card, padding: isSmall ? '16px 14px' : 24 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                 <StarRating value={f.rating} />
                 <span style={{ color: '#9ca3af', fontSize: 11 }}>{new Date(f.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
@@ -1474,11 +1774,15 @@ function formatNotesSummary(rawNotes) {
 }
 
 function ClinicalNotesModal({ booking, onClose, onSaved }) {
+  const winWidth = useWindowWidth();
+  const isMobile = winWidth <= 768;
+  const isSmall = winWidth <= 480;
+
   const initialForm = useMemo(() => {
     if (!booking?.id) return DEFAULT_CLINICAL_FORM;
     const draft = localStorage.getItem(`hd_draft_notes_${booking.id}`);
     if (draft) {
-      try { return { ...DEFAULT_CLINICAL_FORM, ...JSON.parse(draft) }; } catch {}
+      try { return { ...DEFAULT_CLINICAL_FORM, ...JSON.parse(draft) }; } catch { }
     }
     return parseRawNotes(booking.notes);
   }, [booking]);
@@ -1536,11 +1840,11 @@ function ClinicalNotesModal({ booking, onClose, onSaved }) {
       position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
       background: 'rgba(13, 43, 30, 0.75)', backdropFilter: 'blur(6px)',
       zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: '20px 16px', boxSizing: 'border-box'
+      padding: isSmall ? '8px 6px' : (isMobile ? '12px 8px' : '20px 16px'), boxSizing: 'border-box'
     }}>
       <div style={{
-        width: 'min(920px, 94vw)', height: 'min(860px, 86vh)',
-        background: '#F8F5F0', borderRadius: 24,
+        width: isMobile ? '96vw' : 'min(920px, 94vw)', height: isMobile ? '94vh' : 'min(860px, 86vh)',
+        background: '#F8F5F0', borderRadius: isSmall ? 16 : 24,
         border: '1px solid rgba(201, 168, 76, 0.4)',
         boxShadow: '0 24px 48px rgba(0,0,0,0.4)',
         display: 'flex', flexDirection: 'column', overflow: 'hidden'
@@ -1548,26 +1852,26 @@ function ClinicalNotesModal({ booking, onClose, onSaved }) {
         {/* Header */}
         <div style={{
           background: `linear-gradient(135deg, ${C.greenDark}, ${C.green})`,
-          padding: '20px 24px', color: '#fff', display: 'flex',
+          padding: isSmall ? '12px 14px' : (isMobile ? '14px 16px' : '20px 24px'), color: '#fff', display: 'flex',
           justifyContent: 'space-between', alignItems: 'flex-start',
           borderBottom: '1px solid rgba(201, 168, 76, 0.25)'
         }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-              <span style={{ fontSize: 22 }}>📋</span>
-              <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 22, fontWeight: 700, margin: 0, color: '#fff' }}>
+              <span style={{ fontSize: isSmall ? 18 : 22 }}>📋</span>
+              <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: isSmall ? 16 : (isMobile ? 18 : 22), fontWeight: 700, margin: 0, color: '#fff' }}>
                 Consultation Notes
               </h2>
             </div>
-            <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', fontSize: 12.5, color: 'rgba(255,255,255,0.85)', marginTop: 8 }}>
-              <div><strong>Patient Name:</strong> <span style={{ color: C.gold, fontWeight: 600 }}>{booking.patientName}</span></div>
+            <div style={{ display: 'flex', gap: isSmall ? 8 : (isMobile ? 10 : 18), flexWrap: 'wrap', fontSize: isSmall ? 11.5 : (isMobile ? 12 : 12.5), color: 'rgba(255,255,255,0.85)', marginTop: 8 }}>
+              <div><strong>Patient:</strong> <span style={{ color: C.gold, fontWeight: 600 }}>{booking.patientName}</span></div>
               <div><strong>Date:</strong> {booking.date} · {booking.timeSlot}</div>
-              <div><strong>Type:</strong> {booking.type === 'online' ? '💻 Online Consultation' : '🏥 In-Clinic Appointment'}</div>
+              <div><strong>Type:</strong> {booking.type === 'online' ? '💻 Online' : '🏥 In-Clinic'}</div>
             </div>
           </div>
           <button
             onClick={handleCancel}
-            style={{ background: 'rgba(255,255,255,0.12)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '50%', width: 34, height: 34, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ background: 'rgba(255,255,255,0.12)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '50%', width: 32, height: 32, cursor: 'pointer', fontSize: 15, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
             title="Close notes workspace"
           >
             ✕
@@ -1576,28 +1880,28 @@ function ClinicalNotesModal({ booking, onClose, onSaved }) {
 
         {/* Alert Banner */}
         {alert.text && (
-          <div style={{ padding: '10px 24px', background: alert.type === 'error' ? '#fef2f2' : '#f0fdf4', color: alert.type === 'error' ? '#dc2626' : '#166534', borderBottom: '1px solid rgba(0,0,0,0.05)', fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ padding: '8px 16px', background: alert.type === 'error' ? '#fef2f2' : '#f0fdf4', color: alert.type === 'error' ? '#dc2626' : '#166534', borderBottom: '1px solid rgba(0,0,0,0.05)', fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span>{alert.type === 'error' ? '⚠️' : '✅'} {alert.text}</span>
             <button onClick={() => setAlert({ text: '', type: 'success' })} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}>✕</button>
           </div>
         )}
 
         {/* Scrollable Sheet Body */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '24px 28px', background: '#F8F5F0' }}>
-          <div style={{ background: '#ffffff', borderRadius: 16, padding: '24px', border: '1px solid rgba(27,67,50,0.1)', boxShadow: '0 4px 16px rgba(0,0,0,0.03)' }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: isSmall ? '12px 8px' : (isMobile ? '16px 14px' : '24px 28px'), background: '#F8F5F0' }}>
+          <div style={{ background: '#ffffff', borderRadius: 16, padding: isSmall ? '12px 10px' : (isMobile ? '16px' : '24px'), border: '1px solid rgba(27,67,50,0.1)', boxShadow: '0 4px 16px rgba(0,0,0,0.03)' }}>
             {/* Patient Concern Header */}
             {booking.concern && (
-              <div style={{ background: 'rgba(82,183,136,0.08)', border: '1px solid rgba(82,183,136,0.22)', borderRadius: 12, padding: '12px 16px', marginBottom: 24 }}>
-                <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1, color: C.green, fontWeight: 700, marginBottom: 2 }}>Initial Patient Concern</div>
-                <div style={{ fontSize: 13.5, color: '#374151', fontStyle: 'italic' }}>"{booking.concern}"</div>
+              <div style={{ background: 'rgba(82,183,136,0.08)', border: '1px solid rgba(82,183,136,0.22)', borderRadius: 12, padding: isSmall ? '10px 12px' : '12px 16px', marginBottom: isSmall ? 16 : 24 }}>
+                <div style={{ fontSize: 10.5, textTransform: 'uppercase', letterSpacing: 1, color: C.green, fontWeight: 700, marginBottom: 2 }}>Initial Patient Concern</div>
+                <div style={{ fontSize: isSmall ? 12.5 : 13.5, color: '#374151', fontStyle: 'italic' }}>"{booking.concern}"</div>
               </div>
             )}
 
             {/* 7 Clinical Sections */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: isSmall ? 14 : 22 }}>
               {CLINICAL_NOTE_SECTIONS.map(({ key, title, placeholder }) => (
                 <div key={key}>
-                  <label style={{ display: 'block', fontWeight: 600, color: C.green, fontSize: 14.5, marginBottom: 6, fontFamily: 'Playfair Display, serif' }}>
+                  <label style={{ display: 'block', fontWeight: 600, color: C.green, fontSize: isSmall ? 13.5 : 14.5, marginBottom: 6, fontFamily: 'Playfair Display, serif' }}>
                     {title}
                   </label>
                   <textarea
@@ -1605,10 +1909,10 @@ function ClinicalNotesModal({ booking, onClose, onSaved }) {
                     style={{
                       width: '100%', background: '#FAF8F5',
                       border: '1px solid rgba(27,67,50,0.18)', borderRadius: 10,
-                      padding: '12px 14px', color: '#1a1a1a', fontSize: 13.5,
+                      padding: isSmall ? '10px 12px' : '12px 14px', color: '#1a1a1a', fontSize: isSmall ? 13 : 13.5,
                       lineHeight: 1.6, fontFamily: 'Inter, sans-serif', outline: 'none',
                       boxSizing: 'border-box', transition: 'border-color 200ms ease, box-shadow 200ms ease',
-                      resize: 'vertical', minHeight: 84
+                      resize: 'vertical', minHeight: isSmall ? 70 : 84
                     }}
                     placeholder={placeholder}
                     value={form[key] || ''}
@@ -1621,16 +1925,16 @@ function ClinicalNotesModal({ booking, onClose, onSaved }) {
         </div>
 
         {/* Footer Actions */}
-        <div style={{ padding: '16px 24px', background: '#fff', borderTop: '1px solid rgba(27,67,50,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-          <div style={{ fontSize: 12, color: '#6b7280' }}>
-            {hasUnsaved ? <span style={{ color: C.gold, fontWeight: 600 }}>● Unsaved changes (draft auto-saved locally)</span> : <span style={{ color: C.sage, fontWeight: 600 }}>✓ All changes saved</span>}
+        <div style={{ padding: isSmall ? '12px 14px' : (isMobile ? '14px 16px' : '16px 24px'), background: '#fff', borderTop: '1px solid rgba(27,67,50,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+          <div style={{ fontSize: isSmall ? 11 : 12, color: '#6b7280', width: isSmall ? '100%' : 'auto' }}>
+            {hasUnsaved ? <span style={{ color: C.gold, fontWeight: 600 }}>● Unsaved draft</span> : <span style={{ color: C.sage, fontWeight: 600 }}>✓ All changes saved</span>}
           </div>
-          <div style={{ display: 'flex', gap: 12 }}>
-            <button onClick={handleCancel} style={{ ...S.btnOutline, padding: '10px 20px', fontSize: 13 }}>
+          <div style={{ display: 'flex', gap: isSmall ? 8 : 12, width: isSmall ? '100%' : 'auto' }}>
+            <button onClick={handleCancel} style={{ ...S.btnOutline, flex: isSmall ? 1 : 'none', padding: isSmall ? '8px 12px' : '10px 20px', fontSize: isSmall ? 12 : 13 }}>
               Cancel
             </button>
-            <button onClick={handleSave} disabled={saving} style={{ ...S.btnGold, padding: '10px 24px', fontSize: 13, opacity: saving ? 0.7 : 1 }}>
-              {saving ? 'Saving Notes…' : isExistingNotes ? 'Update Notes' : 'Save Notes'}
+            <button onClick={handleSave} disabled={saving} style={{ ...S.btnGold, flex: isSmall ? 1 : 'none', padding: isSmall ? '8px 12px' : '10px 24px', fontSize: isSmall ? 12 : 13, opacity: saving ? 0.7 : 1 }}>
+              {saving ? 'Saving…' : isExistingNotes ? 'Update Notes' : 'Save Notes'}
             </button>
           </div>
         </div>
@@ -1640,6 +1944,10 @@ function ClinicalNotesModal({ booking, onClose, onSaved }) {
 }
 
 function DoctorPortal() {
+  const winWidth = useWindowWidth();
+  const isMobile = winWidth <= 768;
+  const isSmall = winWidth <= 480;
+
   const { user, logout } = useAuth();
 
   // Guard clause: this component must never render content for a patient
@@ -1734,56 +2042,119 @@ function DoctorPortal() {
   ).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   const sidebarTabs = [
-    ['dashboard','🏠 Dashboard'],['appointments','📅 Appointments'],
-    ['patients','👥 Patients'],['diet','🥗 Diet Plans'],['feedback','⭐ Feedback'],
+    ['dashboard', '🏠 Dashboard'], ['appointments', '📅 Appointments'],
+    ['patients', '👥 Patients'], ['diet', '🥗 Diet Plans'], ['feedback', '⭐ Feedback'],
   ];
 
   return (
-    <div style={{ ...S.page, display: 'flex', minHeight: '100vh' }}>
+    <div style={{ ...S.page, display: 'flex', flexDirection: isMobile ? 'column' : 'row', minHeight: '100vh' }}>
       {/* Sidebar */}
-      <aside style={{ width: 230, background: `linear-gradient(180deg,#0a1f16,${C.greenDark})`, padding: '24px 0', display: 'flex', flexDirection: 'column', flexShrink: 0, minHeight: '100vh' }}>
-        <div style={{ padding: '0 20px 24px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}><div style={{ width: 130, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', overflow: 'hidden', flexShrink: 0 }}><img src="/logo-full.png" alt="Dr. Isha's Homeopathic Clinic" style={{ height: '100%', width: 'auto', maxWidth: '100%', objectFit: 'contain' }} /></div></div>
-          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', letterSpacing: 2, textTransform: 'uppercase' }}>DOCTOR PANEL</div>
+      <aside style={{
+        width: isMobile ? '100%' : 230,
+        background: `linear-gradient(180deg,#0a1f16,${C.greenDark})`,
+        padding: isMobile ? '12px 14px' : '24px 0',
+        display: 'flex',
+        flexDirection: 'column',
+        flexShrink: 0,
+        minHeight: isMobile ? 'auto' : '100vh',
+        boxSizing: 'border-box'
+      }}>
+        <div style={{
+          padding: isMobile ? '0 0 10px' : '0 20px 24px',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
+              <div style={{ width: 130, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', overflow: 'hidden', flexShrink: 0 }}>
+                <img src="/logo-full.png" alt="Dr. Isha's Homeopathic Clinic" style={{ height: '100%', width: 'auto', maxWidth: '100%', objectFit: 'contain' }} />
+              </div>
+            </div>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', letterSpacing: 2, textTransform: 'uppercase' }}>DOCTOR PANEL</div>
+          </div>
+          {isMobile && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ width: 32, height: 32, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, border: '2px solid rgba(201,168,76,0.4)' }}>
+                <img src="/doctor.jpg" alt={user?.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+              <button onClick={logout} style={{ ...S.btnOutline, color: 'rgba(255,255,255,0.85)', borderColor: 'rgba(255,255,255,0.25)', fontSize: 11, padding: '5px 10px' }}>
+                Logout
+              </button>
+            </div>
+          )}
         </div>
-        <div style={{ flex: 1, padding: '16px 12px' }}>
+        <div className={isMobile ? 'hd-scroll-x' : ''} style={{
+          flex: 1,
+          padding: isMobile ? '8px 0 0' : '16px 12px',
+          display: 'flex',
+          flexDirection: isMobile ? 'row' : 'column',
+          overflowX: isMobile ? 'auto' : 'visible',
+          gap: isMobile ? 6 : 2,
+          WebkitOverflowScrolling: 'touch'
+        }}>
           {sidebarTabs.map(([id, label]) => (
-            <button key={id} onClick={() => { setTab(id); setSelectedPatient(null); }} style={{ width: '100%', textAlign: 'left', background: tab === id ? 'rgba(255,255,255,0.12)' : 'transparent', color: tab === id ? '#fff' : 'rgba(255,255,255,0.55)', border: 'none', borderLeft: tab === id ? `3px solid ${C.gold}` : '3px solid transparent', borderRadius: 10, padding: '11px 14px', cursor: 'pointer', fontSize: 13, fontWeight: tab === id ? 600 : 400, marginBottom: 2 }}>{label}</button>
+            <button
+              key={id}
+              onClick={() => { setTab(id); setSelectedPatient(null); }}
+              style={{
+                width: isMobile ? 'auto' : '100%',
+                textAlign: isMobile ? 'center' : 'left',
+                background: tab === id ? 'rgba(255,255,255,0.12)' : 'transparent',
+                color: tab === id ? '#fff' : 'rgba(255,255,255,0.55)',
+                border: 'none',
+                borderLeft: !isMobile && tab === id ? `3px solid ${C.gold}` : 'none',
+                borderBottom: isMobile && tab === id ? `3px solid ${C.gold}` : 'none',
+                borderRadius: isMobile ? 8 : 10,
+                padding: isMobile ? '8px 12px' : '11px 14px',
+                cursor: 'pointer',
+                fontSize: isMobile ? 12 : 13,
+                fontWeight: tab === id ? 600 : 400,
+                marginBottom: isMobile ? 0 : 2,
+                whiteSpace: 'nowrap',
+                flexShrink: 0
+              }}
+            >
+              {label}
+            </button>
           ))}
         </div>
-        <div style={{ padding: '16px 12px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-            <div style={{ width: 40, height: 40, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, border: '2px solid rgba(201,168,76,0.4)' }}><img src="/doctor.jpg" alt={user?.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
-            <div><div style={{ color: '#fff', fontSize: 13, fontWeight: 600 }}>{user?.name}</div><div style={{ color: C.sage, fontSize: 11 }}>Homeopath</div></div>
+        {!isMobile && (
+          <div style={{ padding: '16px 12px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+              <div style={{ width: 40, height: 40, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, border: '2px solid rgba(201,168,76,0.4)' }}><img src="/doctor.jpg" alt={user?.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
+              <div><div style={{ color: '#fff', fontSize: 13, fontWeight: 600 }}>{user?.name}</div><div style={{ color: C.sage, fontSize: 11 }}>Homeopath</div></div>
+            </div>
+            <button onClick={logout} style={{ ...S.btnOutline, width: '100%', color: 'rgba(255,255,255,0.6)', borderColor: 'rgba(255,255,255,0.2)', fontSize: 12 }}>Logout</button>
           </div>
-          <button onClick={logout} style={{ ...S.btnOutline, width: '100%', color: 'rgba(255,255,255,0.6)', borderColor: 'rgba(255,255,255,0.2)', fontSize: 12 }}>Logout</button>
-        </div>
+        )}
       </aside>
 
       {/* Main */}
-      <main style={{ flex: 1, background: C.cream, padding: 32, overflowY: 'auto' }}>
+      <main style={{ flex: 1, background: C.cream, padding: isSmall ? '16px 12px' : (isMobile ? '20px 14px' : 32), overflowY: 'auto', width: '100%', boxSizing: 'border-box' }}>
 
         {/* DASHBOARD */}
         {tab === 'dashboard' && (
           <div>
-            <h2 style={{ ...S.sectionHLight, marginBottom: 4 }}>Good Morning, {user?.name} 🌿</h2>
-            <p style={{ color: '#6b7280', marginBottom: 24 }}>Here's your practice overview for today.</p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: 16, marginBottom: 28 }}>
+            <h2 style={{ ...S.sectionHLight, marginBottom: 4, fontSize: isSmall ? 18 : (isMobile ? 20 : 22) }}>Good Morning, {user?.name} 🌿</h2>
+            <p style={{ color: '#6b7280', marginBottom: 24, fontSize: isSmall ? 13 : 14 }}>Here's your practice overview for today.</p>
+            <div style={{ display: 'grid', gridTemplateColumns: isSmall ? '1fr 1fr' : (isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit,minmax(180px,1fr))'), gap: isSmall ? 10 : (isMobile ? 12 : 16), marginBottom: 28 }}>
               {[
                 ['👥', uniquePatientCount, 'Total Patients', C.green],
                 ['📅', todaysBookings.length, 'Appointments Today', '#d97706'],
                 ['💻', onlineCount, 'Online Consults', C.sage],
-                ['⭐','4.9','Avg Rating',C.gold],
-              ].map(([ic,n,l,c]) => (
-                <div key={l} style={{ ...S.card, borderTop: `4px solid ${c}` }}>
-                  <div style={{ fontSize: 24, marginBottom: 8 }}>{ic}</div>
-                  <div style={{ fontFamily: 'Playfair Display,serif', fontSize: 28, fontWeight: 700, color: c }}>{n}</div>
-                  <div style={{ color: '#6b7280', fontSize: 13 }}>{l}</div>
+                ['⭐', '4.9', 'Avg Rating', C.gold],
+              ].map(([ic, n, l, c]) => (
+                <div key={l} style={{ ...S.card, padding: isSmall ? '14px 10px' : 24, borderTop: `4px solid ${c}` }}>
+                  <div style={{ fontSize: isSmall ? 20 : 24, marginBottom: 6 }}>{ic}</div>
+                  <div style={{ fontFamily: 'Playfair Display,serif', fontSize: isSmall ? 22 : 28, fontWeight: 700, color: c }}>{n}</div>
+                  <div style={{ color: '#6b7280', fontSize: isSmall ? 11.5 : 13 }}>{l}</div>
                 </div>
               ))}
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: 20 }}>
-              <div style={S.card}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '3fr 2fr', gap: 20 }}>
+              <div style={{ ...S.card, padding: isSmall ? '16px 12px' : 24 }}>
                 <h3 style={{ fontFamily: 'Playfair Display,serif', color: C.green, fontSize: 16, marginBottom: 16 }}>Today's Schedule</h3>
                 {bookingsLoading && <p style={{ color: '#6b7280', fontSize: 13 }}>Loading…</p>}
                 {!bookingsLoading && todaysBookings.length === 0 && <p style={{ color: '#6b7280', fontSize: 13 }}>Nothing scheduled for today.</p>}
@@ -1803,7 +2174,7 @@ function DoctorPortal() {
                   </div>
                 ))}
               </div>
-              <div style={S.card}>
+              <div style={{ ...S.card, padding: isSmall ? '16px 12px' : 24 }}>
                 <h3 style={{ fontFamily: 'Playfair Display,serif', color: C.green, fontSize: 16, marginBottom: 14 }}>Recent Patients</h3>
                 {recentPatients.length === 0 && <p style={{ color: '#9ca3af', fontSize: 13 }}>No patients yet.</p>}
                 {recentPatients.slice(0, 3).map(p => (
@@ -1821,14 +2192,14 @@ function DoctorPortal() {
         {tab === 'appointments' && (
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
-              <h2 style={S.sectionHLight}>📅 All Appointments</h2>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {['All','Pending','Confirmed','Completed','Cancelled'].map(s => (
+              <h2 style={{ ...S.sectionHLight, margin: 0, fontSize: isSmall ? 18 : (isMobile ? 20 : 22) }}>📅 All Appointments</h2>
+              <div style={{ display: 'flex', gap: isSmall ? 6 : 8, flexWrap: 'wrap' }}>
+                {['All', 'Pending', 'Confirmed', 'Completed', 'Cancelled'].map(s => (
                   <button
                     key={s}
                     onClick={() => setStatusFilter(s)}
                     style={{
-                      ...S.btnOutline, fontSize: 12, padding: '7px 14px',
+                      ...S.btnOutline, fontSize: isSmall ? 11 : 12, padding: isSmall ? '5px 10px' : '7px 14px',
                       ...(statusFilter === s ? { background: C.green, color: '#fff' } : {}),
                     }}
                   >
@@ -1843,10 +2214,10 @@ function DoctorPortal() {
               <p style={{ color: '#6b7280' }}>No appointments assigned to you{statusFilter !== 'All' ? ` with status "${statusFilter}"` : ''} yet.</p>
             )}
             {visibleBookings.map(a => (
-              <div key={a.id} style={S.card}>
+              <div key={a.id} style={{ ...S.card, padding: isSmall ? '16px 12px' : 24 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
                   <div>
-                    <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 6 }}>
+                    <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 6, flexWrap: 'wrap' }}>
                       <span style={{ fontSize: 18 }}>{a.type === 'online' ? '💻' : '🏥'}</span>
                       <span style={{ fontWeight: 700, color: '#1a1a1a', fontSize: 16 }}>{a.patientName}</span>
                       <StatusBadge status={a.status} />
@@ -1857,12 +2228,12 @@ function DoctorPortal() {
                     {a.notes && <div style={{ color: C.green, fontSize: 13, marginTop: 6, background: 'rgba(27,67,50,0.06)', borderRadius: 8, padding: '6px 10px' }}>📝 <strong>Notes:</strong> {formatNotesSummary(a.notes)}</div>}
                     {a.meetingLink && <div style={{ color: '#6b7280', fontSize: 12, marginTop: 4 }}>🔗 <a href={a.meetingLink} target="_blank" rel="noreferrer" style={{ color: C.greenMid }}>{a.meetingLink}</a></div>}
                   </div>
-                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                    {a.status === 'pending' && <button onClick={() => updateBookingStatus(a, 'confirmed')} style={{ ...S.btnGreen, fontSize: 12, padding: '8px 14px' }}>✓ Confirm</button>}
-                    {a.status === 'confirmed' && <button onClick={() => updateBookingStatus(a, 'completed')} style={{ ...S.btnGreen, fontSize: 12, padding: '8px 14px' }}>✔ Mark Completed</button>}
-                    {(a.status === 'pending' || a.status === 'confirmed') && <button onClick={() => updateBookingStatus(a, 'cancelled')} style={{ ...S.btnDanger, fontSize: 12, padding: '8px 14px' }}>✕ Cancel</button>}
-                    {a.type === 'online' && <button onClick={() => addMeetingLink(a)} style={{ ...S.btnGold, fontSize: 12, padding: '8px 14px' }}>🔗 {a.meetingLink ? 'Edit Link' : 'Add Link'}</button>}
-                    <button onClick={() => addNotes(a)} style={{ ...S.btnOutline, fontSize: 12, padding: '8px 14px' }}>📝 {a.notes ? 'Edit Notes' : 'Notes'}</button>
+                  <div style={{ display: 'flex', gap: isSmall ? 6 : 8, flexWrap: 'wrap' }}>
+                    {a.status === 'pending' && <button onClick={() => updateBookingStatus(a, 'confirmed')} style={{ ...S.btnGreen, fontSize: isSmall ? 11 : 12, padding: isSmall ? '6px 10px' : '8px 14px' }}>✓ Confirm</button>}
+                    {a.status === 'confirmed' && <button onClick={() => updateBookingStatus(a, 'completed')} style={{ ...S.btnGreen, fontSize: isSmall ? 11 : 12, padding: isSmall ? '6px 10px' : '8px 14px' }}>✔ Completed</button>}
+                    {(a.status === 'pending' || a.status === 'confirmed') && <button onClick={() => updateBookingStatus(a, 'cancelled')} style={{ ...S.btnDanger, fontSize: isSmall ? 11 : 12, padding: isSmall ? '6px 10px' : '8px 14px' }}>✕ Cancel</button>}
+                    {a.type === 'online' && <button onClick={() => addMeetingLink(a)} style={{ ...S.btnGold, fontSize: isSmall ? 11 : 12, padding: isSmall ? '6px 10px' : '8px 14px' }}>🔗 {a.meetingLink ? 'Edit Link' : 'Add Link'}</button>}
+                    <button onClick={() => addNotes(a)} style={{ ...S.btnOutline, fontSize: isSmall ? 11 : 12, padding: isSmall ? '6px 10px' : '8px 14px' }}>📝 {a.notes ? 'Edit Notes' : 'Notes'}</button>
                   </div>
                 </div>
               </div>
@@ -1907,6 +2278,10 @@ const EMPTY_RECORD_FORM = {
 };
 
 function DoctorPatientsPanel({ user, selectedPatientId, setSelectedPatientId }) {
+  const winWidth = useWindowWidth();
+  const isMobile = winWidth <= 768;
+  const isSmall = winWidth <= 480;
+
   const [patients, setPatients] = useState([]);
   const [patientsLoading, setPatientsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -1996,18 +2371,18 @@ function DoctorPatientsPanel({ user, selectedPatientId, setSelectedPatientId }) 
   if (!selectedPatientId) {
     return (
       <div>
-        <h2 style={{ ...S.sectionHLight, marginBottom: 4 }}>👥 Patient Records</h2>
-        <p style={{ color: '#6b7280', marginBottom: 20 }}>{patients.length} patient{patients.length === 1 ? '' : 's'} on your roster</p>
+        <h2 style={{ ...S.sectionHLight, marginBottom: 4, fontSize: isSmall ? 18 : (isMobile ? 20 : 22) }}>👥 Patient Records</h2>
+        <p style={{ color: '#6b7280', marginBottom: 20, fontSize: isSmall ? 13 : 14 }}>{patients.length} patient{patients.length === 1 ? '' : 's'} on your roster</p>
         {error && <Alert msg={error} type="error" />}
         {patientsLoading && <p style={{ color: '#6b7280' }}>Loading patients…</p>}
         {!patientsLoading && patients.length === 0 && (
           <p style={{ color: '#6b7280' }}>No patients yet — once someone books an appointment or online consultation with you, they'll appear here.</p>
         )}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill,minmax(260px,1fr))', gap: 16 }}>
           {patients.map((p) => (
-            <div key={p.id} style={{ ...S.card, cursor: 'pointer' }} onClick={() => setSelectedPatientId(p.id)}>
+            <div key={p.id} style={{ ...S.card, padding: isSmall ? '16px 14px' : 24, cursor: 'pointer' }} onClick={() => setSelectedPatientId(p.id)}>
               <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 14 }}>
-                <div style={{ width: 48, height: 48, borderRadius: '50%', background: `linear-gradient(135deg,${C.sage},${C.green})`, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 18 }}>{p.name[0]}</div>
+                <div style={{ width: 48, height: 48, borderRadius: '50%', background: `linear-gradient(135deg,${C.sage},${C.green})`, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 18, flexShrink: 0 }}>{p.name[0]}</div>
                 <div><div style={{ fontWeight: 700, color: '#1a1a1a', fontSize: 15 }}>{p.name}</div><div style={{ color: '#9ca3af', fontSize: 12 }}>{p.email}</div></div>
               </div>
               <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 6 }}>📋 {p.recordCount} record{p.recordCount === 1 ? '' : 's'}{p.lastRemedy ? ` · ${p.lastRemedy}` : ''}</div>
@@ -2024,39 +2399,39 @@ function DoctorPatientsPanel({ user, selectedPatientId, setSelectedPatientId }) 
 
   return (
     <div>
-      <button onClick={() => setSelectedPatientId(null)} style={{ ...S.btnOutline, marginBottom: 20, fontSize: 13 }}>← Back to Patients</button>
+      <button onClick={() => setSelectedPatientId(null)} style={{ ...S.btnOutline, marginBottom: 20, fontSize: isSmall ? 12 : 13, padding: isSmall ? '6px 12px' : '8px 16px' }}>← Back to Patients</button>
       {error && <Alert msg={error} type="error" />}
       <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 24, flexWrap: 'wrap' }}>
-        <div style={{ width: 60, height: 60, borderRadius: '50%', background: `linear-gradient(135deg,${C.sage},${C.green})`, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 24 }}>{selectedPatient?.name?.[0]}</div>
+        <div style={{ width: 52, height: 52, borderRadius: '50%', background: `linear-gradient(135deg,${C.sage},${C.green})`, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 22, flexShrink: 0 }}>{selectedPatient?.name?.[0]}</div>
         <div>
-          <h2 style={{ ...S.sectionHLight, margin: 0 }}>{selectedPatient?.name}</h2>
-          <p style={{ color: '#6b7280', fontSize: 14 }}>{selectedPatient?.email}{selectedPatient?.phone ? ` · ${selectedPatient.phone}` : ''}</p>
+          <h2 style={{ ...S.sectionHLight, margin: 0, fontSize: isSmall ? 18 : (isMobile ? 20 : 22) }}>{selectedPatient?.name}</h2>
+          <p style={{ color: '#6b7280', fontSize: isSmall ? 13 : 14 }}>{selectedPatient?.email}{selectedPatient?.phone ? ` · ${selectedPatient.phone}` : ''}</p>
         </div>
       </div>
 
-      <div style={S.card}>
+      <div style={{ ...S.card, padding: isSmall ? '16px 14px' : 24 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
           <h3 style={{ fontFamily: 'Playfair Display,serif', color: C.green, fontSize: 16, margin: 0 }}>Visit History</h3>
           {!showForm && <button onClick={openAdd} style={{ ...S.btnGold, fontSize: 12, padding: '8px 16px' }}>+ Add Visit</button>}
         </div>
 
         {showForm && (
-          <form onSubmit={submitForm} style={{ background: C.cream, borderRadius: 12, padding: 16, marginBottom: 18 }}>
+          <form onSubmit={submitForm} style={{ background: C.cream, borderRadius: 12, padding: isSmall ? '12px 10px' : (isMobile ? 12 : 16), marginBottom: 18 }}>
             <h4 style={{ fontFamily: 'Playfair Display,serif', color: C.green, fontSize: 14, marginBottom: 12 }}>{editingId ? 'Edit Visit' : 'New Visit'}</h4>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12, marginBottom: 12 }}>
               <div><label style={S.labelLight}>Visit Date</label><input style={S.inputLight} type="date" value={form.visitDate} onChange={(e) => setForm({ ...form, visitDate: e.target.value })} required /></div>
               <div><label style={S.labelLight}>Follow-up Date</label><input style={S.inputLight} type="date" value={form.followUpDate} onChange={(e) => setForm({ ...form, followUpDate: e.target.value })} /></div>
             </div>
             <div style={{ marginBottom: 12 }}><label style={S.labelLight}>Chief Complaint</label><input style={S.inputLight} value={form.chiefComplaint} onChange={(e) => setForm({ ...form, chiefComplaint: e.target.value })} placeholder="e.g. Migraine episodes 3×/week" required /></div>
             <div style={{ marginBottom: 12 }}><label style={S.labelLight}>Diagnosis / Constitution</label><input style={S.inputLight} value={form.diagnosis} onChange={(e) => setForm({ ...form, diagnosis: e.target.value })} placeholder="e.g. Phosphorous type, psoric background" /></div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12, marginBottom: 12 }}>
               <div><label style={S.labelLight}>Remedy</label><input style={S.inputLight} value={form.remedy} onChange={(e) => setForm({ ...form, remedy: e.target.value })} placeholder="e.g. Natrum Mur" required /></div>
               <div><label style={S.labelLight}>Potency / Dosage</label><input style={S.inputLight} value={form.potency} onChange={(e) => setForm({ ...form, potency: e.target.value })} placeholder="e.g. 200C, 1 dose weekly" /></div>
             </div>
             <div style={{ marginBottom: 14 }}><label style={S.labelLight}>Notes</label><textarea rows={3} style={{ ...S.inputLight, resize: 'none' }} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Response, observations, next steps…" /></div>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button type="submit" disabled={saving} style={{ ...S.btnGreen, opacity: saving ? 0.7 : 1 }}>{saving ? 'Saving…' : editingId ? 'Save Changes' : 'Add Visit'}</button>
-              <button type="button" onClick={() => { setShowForm(false); setEditingId(null); }} style={S.btnOutline}>Cancel</button>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              <button type="submit" disabled={saving} style={{ ...S.btnGreen, fontSize: isSmall ? 12 : 13, padding: isSmall ? '8px 14px' : '10px 18px', opacity: saving ? 0.7 : 1 }}>{saving ? 'Saving…' : editingId ? 'Save Changes' : 'Add Visit'}</button>
+              <button type="button" onClick={() => { setShowForm(false); setEditingId(null); }} style={{ ...S.btnOutline, fontSize: isSmall ? 12 : 13, padding: isSmall ? '8px 14px' : '10px 18px' }}>Cancel</button>
             </div>
           </form>
         )}
@@ -2070,10 +2445,10 @@ function DoctorPatientsPanel({ user, selectedPatientId, setSelectedPatientId }) 
                 <span style={{ fontWeight: 600, color: C.green, fontSize: 14 }}>{formatRecordDate(r.visitDate)}</span>
                 {r.followUpDate && <span style={{ color: '#9ca3af', fontSize: 12, marginLeft: 10 }}>Follow-up: {formatRecordDate(r.followUpDate)}</span>}
               </div>
-              <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
                 <span style={S.tag}>{r.remedy}{r.potency ? ` · ${r.potency}` : ''}</span>
-                <button onClick={() => openEdit(r)} style={{ ...S.btnOutline, fontSize: 11, padding: '5px 10px' }}>Edit</button>
-                <button onClick={() => removeRecord(r)} style={{ ...S.btnDanger, fontSize: 11, padding: '5px 10px' }}>Delete</button>
+                <button onClick={() => openEdit(r)} style={{ ...S.btnOutline, fontSize: 11, padding: '4px 8px' }}>Edit</button>
+                <button onClick={() => removeRecord(r)} style={{ ...S.btnDanger, fontSize: 11, padding: '4px 8px' }}>Delete</button>
               </div>
             </div>
             <div style={{ fontSize: 13, color: '#374151' }}><b>Complaint:</b> {r.chiefComplaint}</div>
@@ -2092,6 +2467,10 @@ const EMPTY_DIET_FORM = {
 };
 
 function DoctorDietPanel() {
+  const winWidth = useWindowWidth();
+  const isMobile = winWidth <= 768;
+  const isSmall = winWidth <= 480;
+
   const [patients, setPatients] = useState([]);
   const [patientsLoading, setPatientsLoading] = useState(true);
   const [plans, setPlans] = useState([]);
@@ -2218,16 +2597,16 @@ function DoctorDietPanel() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <h2 style={S.sectionHLight}>🥗 Diet Plans</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
+        <h2 style={{ ...S.sectionHLight, margin: 0, fontSize: isSmall ? 18 : (isMobile ? 20 : 22) }}>🥗 Diet Plans</h2>
         <button onClick={() => (showForm ? setShowForm(false) : openAdd())} style={S.btnGold}>{showForm ? '✕ Cancel' : '+ Create Plan'}</button>
       </div>
       <Alert msg={alert} />
       {error && <Alert msg={error} type="error" />}
 
       {showForm && (
-        <div style={{ ...S.card, background: `linear-gradient(135deg,${C.green},${C.greenDark})`, marginBottom: 24 }}>
-          <h3 style={S.sectionH}>{editingId ? 'Edit Diet Plan' : 'Create Diet Plan'}</h3>
+        <div style={{ ...S.card, background: `linear-gradient(135deg,${C.green},${C.greenDark})`, marginBottom: 24, padding: isSmall ? '16px 14px' : (isMobile ? 18 : 24) }}>
+          <h3 style={{ ...S.sectionH, fontSize: isSmall ? 18 : 20 }}>{editingId ? 'Edit Diet Plan' : 'Create Diet Plan'}</h3>
           {!editingId && (
             <div style={{ marginBottom: 14 }}>
               <label style={S.label}>Quick-fill from a template (optional)</label>
@@ -2241,7 +2620,7 @@ function DoctorDietPanel() {
             </div>
           )}
           <form onSubmit={submit}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14, marginBottom: 14 }}>
               <div><label style={S.label}>Patient</label>
                 <select style={{ ...S.input, background: 'rgba(27,67,50,0.9)' }} value={selectedPatientId} onChange={(e) => setSelectedPatientId(e.target.value)} required disabled={!!editingId}>
                   <option value="">{patientsLoading ? 'Loading patients…' : 'Select patient'}</option>
@@ -2254,12 +2633,12 @@ function DoctorDietPanel() {
               <div><label style={S.label}>Plan Title</label><input style={S.input} placeholder="e.g. Anti-Inflammatory Diet" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required /></div>
             </div>
             <div style={{ marginBottom: 14 }}><label style={S.label}>Health Condition / Goal</label><input style={S.input} placeholder="e.g. PCOS, Arthritis, Immunity" value={form.condition} onChange={e => setForm({ ...form, condition: e.target.value })} /></div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14, marginBottom: 14 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 14, marginBottom: 14 }}>
               <div><label style={S.label}>Breakfast Items</label><textarea rows={3} style={{ ...S.input, resize: 'none' }} placeholder="One item per line" value={form.breakfastItems} onChange={e => setForm({ ...form, breakfastItems: e.target.value })} /></div>
               <div><label style={S.label}>Lunch Items</label><textarea rows={3} style={{ ...S.input, resize: 'none' }} placeholder="One item per line" value={form.lunchItems} onChange={e => setForm({ ...form, lunchItems: e.target.value })} /></div>
               <div><label style={S.label}>Dinner Items</label><textarea rows={3} style={{ ...S.input, resize: 'none' }} placeholder="One item per line" value={form.dinnerItems} onChange={e => setForm({ ...form, dinnerItems: e.target.value })} /></div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14, marginBottom: 14 }}>
               <div><label style={S.label}>Foods to Include</label><textarea rows={3} style={{ ...S.input, resize: 'none' }} placeholder="Turmeric, Ginger, Berries..." value={form.include} onChange={e => setForm({ ...form, include: e.target.value })} /></div>
               <div><label style={S.label}>Foods to Avoid</label><textarea rows={3} style={{ ...S.input, resize: 'none' }} placeholder="Sugar, Fried foods..." value={form.avoid} onChange={e => setForm({ ...form, avoid: e.target.value })} /></div>
             </div>
@@ -2275,7 +2654,7 @@ function DoctorDietPanel() {
                 </select>
               </div>
             )}
-            <button type="submit" disabled={saving} style={{ ...S.btnGold, width: '100%', padding: 14, opacity: saving ? 0.7 : 1 }}>{saving ? 'Saving…' : editingId ? 'Save Changes →' : 'Create & Assign Diet Plan →'}</button>
+            <button type="submit" disabled={saving} style={{ ...S.btnGold, width: '100%', padding: isSmall ? 12 : 14, opacity: saving ? 0.7 : 1 }}>{saving ? 'Saving…' : editingId ? 'Save Changes →' : 'Create & Assign Diet Plan →'}</button>
           </form>
         </div>
       )}
@@ -2286,7 +2665,7 @@ function DoctorDietPanel() {
         <p style={{ color: '#6b7280', fontSize: 13 }}>No diet plans created yet — use "+ Create Plan" to assign one to a patient.</p>
       )}
       {plans.map((p) => (
-        <div key={p.id} style={S.card}>
+        <div key={p.id} style={{ ...S.card, padding: isSmall ? '16px 14px' : 24 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
             <div>
               <span style={{ fontWeight: 600, color: '#1a1a1a', fontSize: 15 }}>{p.patientName}</span>
@@ -2294,14 +2673,14 @@ function DoctorDietPanel() {
               {p.status === 'inactive' && <span style={{ ...S.tag, marginLeft: 6, color: '#9ca3af', borderColor: '#e5e7eb' }}>Inactive</span>}
               <div style={{ color: '#6b7280', fontSize: 13, marginTop: 4 }}>Condition: {p.condition || '—'} · Assigned {formatRecordDate(p.createdAt)}</div>
             </div>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button onClick={() => openEdit(p)} style={{ ...S.btnGold, fontSize: 12, padding: '7px 14px' }}>Edit</button>
-              <button onClick={() => setViewingId(viewingId === p.id ? null : p.id)} style={{ ...S.btnOutline, fontSize: 12, padding: '7px 14px' }}>{viewingId === p.id ? 'Hide' : 'View'}</button>
-              <button onClick={() => removePlan(p)} style={{ ...S.btnDanger, fontSize: 12, padding: '7px 14px' }}>Delete</button>
+            <div style={{ display: 'flex', gap: isSmall ? 6 : 8, flexWrap: 'wrap' }}>
+              <button onClick={() => openEdit(p)} style={{ ...S.btnGold, fontSize: isSmall ? 11 : 12, padding: isSmall ? '5px 10px' : '7px 14px' }}>Edit</button>
+              <button onClick={() => setViewingId(viewingId === p.id ? null : p.id)} style={{ ...S.btnOutline, fontSize: isSmall ? 11 : 12, padding: isSmall ? '5px 10px' : '7px 14px' }}>{viewingId === p.id ? 'Hide' : 'View'}</button>
+              <button onClick={() => removePlan(p)} style={{ ...S.btnDanger, fontSize: isSmall ? 11 : 12, padding: isSmall ? '5px 10px' : '7px 14px' }}>Delete</button>
             </div>
           </div>
           {viewingId === p.id && (
-            <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid rgba(27,67,50,0.08)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid rgba(27,67,50,0.08)', display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14 }}>
               <div>
                 <div style={{ fontWeight: 600, color: C.green, fontSize: 13, marginBottom: 6 }}>🌅 Breakfast</div>
                 <div style={{ color: '#374151', fontSize: 13 }}>{(p.meals?.breakfast || []).join(', ') || '—'}</div>
@@ -2338,6 +2717,10 @@ const FEEDBACK_CATEGORY_LABELS = {
 };
 
 function DoctorFeedbackPanel() {
+  const winWidth = useWindowWidth();
+  const isMobile = winWidth <= 768;
+  const isSmall = winWidth <= 480;
+
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -2366,33 +2749,33 @@ function DoctorFeedbackPanel() {
 
   return (
     <div>
-      <h2 style={{ ...S.sectionHLight, marginBottom: 20 }}>⭐ Patient Feedback</h2>
+      <h2 style={{ ...S.sectionHLight, marginBottom: 20, fontSize: isSmall ? 18 : (isMobile ? 20 : 22) }}>⭐ Patient Feedback</h2>
       {error && <Alert msg={error} type="error" />}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: 16, marginBottom: 28 }}>
-        <div style={{ ...S.card, borderTop: `4px solid ${C.gold}`, textAlign: 'center' }}>
-          <div style={{ fontFamily: 'Playfair Display,serif', fontSize: 40, fontWeight: 700, color: C.gold }}>{avg}</div>
+      <div style={{ display: 'grid', gridTemplateColumns: isSmall ? '1fr' : (isMobile ? 'repeat(auto-fit,minmax(140px,1fr))' : 'repeat(auto-fit,minmax(180px,1fr))'), gap: isSmall ? 12 : 16, marginBottom: 28 }}>
+        <div style={{ ...S.card, padding: isSmall ? '16px 14px' : 24, borderTop: `4px solid ${C.gold}`, textAlign: 'center' }}>
+          <div style={{ fontFamily: 'Playfair Display,serif', fontSize: isSmall ? 32 : 40, fontWeight: 700, color: C.gold }}>{avg}</div>
           <StarRating value={Math.round(parseFloat(avg))} />
           <div style={{ color: '#6b7280', fontSize: 13, marginTop: 4 }}>Average Rating</div>
         </div>
-        <div style={{ ...S.card, textAlign: 'center', borderTop: `4px solid ${C.sage}` }}>
-          <div style={{ fontFamily: 'Playfair Display,serif', fontSize: 40, fontWeight: 700, color: C.sage }}>{feedbacks.length}</div>
+        <div style={{ ...S.card, padding: isSmall ? '16px 14px' : 24, textAlign: 'center', borderTop: `4px solid ${C.sage}` }}>
+          <div style={{ fontFamily: 'Playfair Display,serif', fontSize: isSmall ? 32 : 40, fontWeight: 700, color: C.sage }}>{feedbacks.length}</div>
           <div style={{ color: '#6b7280', fontSize: 13, marginTop: 8 }}>Total Reviews</div>
         </div>
-        <div style={{ ...S.card, textAlign: 'center', borderTop: `4px solid ${C.green}` }}>
-          <div style={{ fontFamily: 'Playfair Display,serif', fontSize: 40, fontWeight: 700, color: C.green }}>{recommendPct}%</div>
+        <div style={{ ...S.card, padding: isSmall ? '16px 14px' : 24, textAlign: 'center', borderTop: `4px solid ${C.green}` }}>
+          <div style={{ fontFamily: 'Playfair Display,serif', fontSize: isSmall ? 32 : 40, fontWeight: 700, color: C.green }}>{recommendPct}%</div>
           <div style={{ color: '#6b7280', fontSize: 13, marginTop: 8 }}>Would Recommend</div>
         </div>
       </div>
       {loading && <p style={{ color: '#6b7280' }}>Loading feedback…</p>}
       {!loading && feedbacks.length === 0 && <p style={{ color: '#6b7280' }}>No patient feedback yet.</p>}
       {feedbacks.map((f) => (
-        <div key={f.id} style={S.card}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+        <div key={f.id} style={{ ...S.card, padding: isSmall ? '16px 14px' : 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, flexWrap: 'wrap', gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 36, height: 36, borderRadius: '50%', background: C.green, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600 }}>{f.patientName?.[0] || '?'}</div>
+              <div style={{ width: 36, height: 36, borderRadius: '50%', background: C.green, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, flexShrink: 0 }}>{f.patientName?.[0] || '?'}</div>
               <div>
-                <div style={{ fontWeight: 600, color: '#1a1a1a' }}>{f.patientName}</div>
-                <div style={{ color: '#9ca3af', fontSize: 12 }}>{FEEDBACK_CATEGORY_LABELS[f.category] || f.category} · {new Date(f.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+                <div style={{ fontWeight: 600, color: '#1a1a1a', fontSize: 14 }}>{f.patientName}</div>
+                <div style={{ color: '#9ca3af', fontSize: 11.5 }}>{FEEDBACK_CATEGORY_LABELS[f.category] || f.category} · {new Date(f.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
               </div>
             </div>
             <StarRating value={f.rating} />
